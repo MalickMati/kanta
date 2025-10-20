@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al Hammad Computerized Kanta | Vanike Tarar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+        }
+
+        .invoice {
+            width: 210mm;
+            height: 148mm;
+            background: white;
+            padding: 12px;
+            padding-top: 40px;
+            /* border: 1px solid #ddd; */
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #333;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 3px;
+            color: #2c3e50;
+        }
+
+        .header h2 {
+            font-size: 13px;
+            color: #666;
+            font-weight: normal;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            height: calc(100% - 60px);
+        }
+
+        /* Left Side */
+        .left-side {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .customer-section {
+            margin-bottom: 8px;
+        }
+
+        .customer-section label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #2c3e50;
+            font-size: 13px;
+        }
+
+        .customer-section input {
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid #ddd;
+            padding: 6px 0;
+            font-size: 13px;
+            background: transparent;
+        }
+
+        .vehicle-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .info-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .info-group label {
+            width: 70px;
+            font-size: 12px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .info-group input {
+            flex: 1;
+            border: none;
+            border-bottom: 1px solid #ddd;
+            padding: 4px;
+            font-size: 12px;
+            background: transparent;
+        }
+
+        .time-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .time-column {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .time-column p {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+        .time-input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .time-input-group label {
+            width: 50px;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .time-input-group input {
+            flex: 1;
+            border: none;
+            border-bottom: 1px solid #ddd;
+            padding: 3px;
+            font-size: 11px;
+            background: transparent;
+        }
+
+        .description-section {
+            margin-top: 8px;
+        }
+
+        .description-section p {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .description-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .description-row input {
+            border: none;
+            border-bottom: 1px solid #ddd;
+            padding: 4px;
+            font-size: 11px;
+            background: transparent;
+        }
+
+        .description-row input:first-child {
+            flex: 2;
+        }
+
+        .description-row input:last-child {
+            flex: 1;
+        }
+
+        .mound-group {
+            display: flex;
+            gap: 4px;
+        }
+
+        .mound-group input {
+            text-align: center;
+        }
+
+        /* Right Side */
+        .right-side {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .operator-info {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            border-left: 3px solid #3498db;
+            margin-bottom: 5px;
+        }
+
+        .operator-info p {
+            margin-bottom: 3px;
+            font-size: 11px;
+        }
+
+        .operator-info b {
+            color: #2c3e50;
+        }
+
+        .weights-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .weight-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .weight-row input {
+            flex: 1;
+            border: 2px solid #3498db;
+            padding: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .weight-row p {
+            width: 70px;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 12px;
+        }
+
+        .net-weight input {
+            border-color: #e74c3c;
+            background: #ffeaa7;
+        }
+
+        .amount-section {
+            margin-top: 5px;
+        }
+
+        .amount-section input {
+            width: 100%;
+            border: 2px solid #27ae60;
+            padding: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            background: #d5f4e6;
+            border-radius: 4px;
+            color: #27ae60;
+        }
+    </style>
+    <script>
+        window.onload = function () {
+            window.print();
+        };
+        window.addEventListener("afterprint", () => {
+            window.history.back();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="invoice">
+        <!-- Header -->
+        <div class="header">
+            <h1>AL HAMAD COMPUTERIZED KANTA</h1>
+            <h2>USMAN RICE MILL HAFIZABAD ROAD, VANIKE TARAR</h2>
+        </div>
+
+        <div class="content">
+            <div class="left-side">
+                <div class="customer-section">
+                    <label for="pCustomer_Name">Customer Name:</label>
+                    <input id="pCustomer_Name" value="{{ $record->party }}" disabled>
+                </div>
+
+                <div class="vehicle-info">
+                    <div class="info-group">
+                        <label>Vehicle #:</label>
+                        <input type="text" value="{{ $record->vehicle_number }}" disabled>
+                    </div>
+                    <div class="info-group">
+                        <label>Serial #:</label>
+                        <input type="text" value="{{ $record->id }}" disabled>
+                    </div>
+                </div>
+
+                <div class="time-section">
+                    <div class="time-column">
+                        <p>First Weight</p>
+                        <div class="time-input-group">
+                            <label>Date:</label>
+                            <input type="text" value="{{ date('Y-m-d', strtotime($record->first_date)) }}" disabled>
+                        </div>
+                        <div class="time-input-group">
+                            <label>Time:</label>
+                            <input type="text" value="{{ date('H:i:s', strtotime($record->first_date)) }}" disabled>
+                        </div>
+                    </div>
+
+                    <div class="time-column">
+                        <p>Second Weight</p>
+                        <div class="time-input-group">
+                            <label>Date:</label>
+                            <input type="text" value="{{ $record->second_date ? date('Y-m-d', strtotime($record->second_date)) : '' }}" disabled>
+                        </div>
+                        <div class="time-input-group">
+                            <label>Time:</label>
+                            <input type="text" value="{{ $record->second_date ? date('H:i:s', strtotime($record->second_date)) : '' }}" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="description-section">
+                    <p>Description & Mounds</p>
+                    <div class="description-row">
+                        <input type="text" value="{{ $record->description }}" disabled>
+                        <div class="mound-group">
+                            <input type="text" value="40 Kg" disabled style="width: 50px;">
+                            <input type="text" value="{{ $record->net_weight / 40 ?? '' }}" disabled style="width: 70px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-side">
+                <div class="operator-info">
+                    <p><b>Operator Number:</b> {{ $user->phone }}</p>
+                    <p><b>Operator Name:</b> {{ Str::title($user->name) }}</p>
+                </div>
+
+                <div class="weights-section">
+                    <div class="weight-row">
+                        <p>1st Weight</p>
+                        <input type="text" value="{{ $record->first_weight }} KG" disabled>
+                    </div>
+
+                    <div class="weight-row">
+                        <p>2nd Weight</p>
+                        <input type="text" value="{{ $record->second_weight  ? "$record->second_weight KG" : ''}}" disabled>
+                    </div>
+
+                    <div class="weight-row net-weight">
+                        <p>Net Weight</p>
+                        <input type="text" value="{{ $record->net_weight  ? "$record->net_weight KG" : ''}}" disabled>
+                    </div>
+                </div>
+
+                <div class="amount-section">
+                    <input type="text" value="{{ $record->amount }} Rs. Received With Thanks" disabled>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

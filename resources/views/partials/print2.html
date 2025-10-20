@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Ticket • Variant C</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+  *{box-sizing:border-box}
+  @page{ size:A4 portrait; margin:0 }
+  html,body{ margin:0; padding:0; background:#ffffff; color:#0f141a; -webkit-print-color-adjust:exact; print-color-adjust:exact }
+
+  :root{
+    --ink:#10151c; --muted:#5a6472; --accent:#0a73f0; --accent2:#16c1a6;
+    --okA:#ecfff5; --okText:#0e5a33; --warnA:#fff1ed; --warnText:#812018;
+    --fz:9.6pt; --fz-s:8.6pt; --fz-l:12.5pt; --lh:1.15;
+  }
+
+  .sheet{ width:190mm; height:148.5mm; margin:6mm auto 0; display:flex; align-items:flex-start; }
+  .ticket{
+    width:100%; background:#ffffff; border:1.6px solid #e5ebf3; border-radius:12px; padding:8mm; position:relative;
+    box-shadow: 0 12px 40px rgba(0,0,0,.06);
+  }
+
+  .wm{
+    position:absolute; inset:0; pointer-events:none; opacity:.06; display:flex; align-items:center; justify-content:center;
+    font-size:48pt; font-weight:900; letter-spacing:2px; color:#0a73f0;
+  }
+
+  .head{ position:relative; display:flex; justify-content:space-between; align-items:center; margin-bottom:4mm }
+  .brand{ text-align:left }
+  .brand h1{ margin:0; font-size:var(--fz-l) }
+  .brand p{ margin:.5mm 0 0 0; font-size:8pt; color:#1a3a60; opacity:.85 }
+  .serial{
+    font-weight:900; font-size:var(--fz-s); color:#0a3a8f; background:linear-gradient(90deg,#eef4ff,#f4fffb);
+    padding:4px 10px; border-radius:999px
+  }
+
+  .rule{
+    height:3px; border-radius:3px; background:linear-gradient(90deg,var(--accent),var(--accent2),transparent 75%); margin:3mm 0 4mm 0
+  }
+
+  .grid{ display:grid; grid-template-columns:1.1fr .9fr; gap:8mm }
+  .kv{ width:100%; border-collapse:collapse; font-size:var(--fz) }
+  .kv td{ padding:2px 0 }
+  .k{ width:38%; color:var(--muted); font-weight:700; font-size:var(--fz-s) }
+  .v{ color:var(--ink); font-weight:800 }
+
+  .qr-col{ display:grid; grid-template-columns: 1fr 28mm; gap:6mm }
+  .qr-box{
+    width:28mm; height:28mm; border-radius:10px; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(120% 120% at 50% 0%, #f3f8ff 0, #e7f1ff 60%, #e7fff6 100%);
+  }
+  .qr-box svg,.qr-box img{ width:92%; height:auto }
+
+  .chips{ display:flex; gap:6px; flex-wrap:wrap; margin-top:3px }
+  .chip{ padding:4px 8px; border:1px solid #dfe8f4; border-radius:999px; font-weight:800; font-size:8.8pt; color:#11305c; background:#f7faff }
+
+  .weights{ display:grid; grid-template-columns:repeat(3,1fr); gap:6mm; margin-top:3mm }
+  .card{
+    border:1px solid #e6edf6; border-radius:10px; padding:6px 8px; background:#fbfdff
+  }
+  .card .label{ font-size:var(--fz-s); color:#39465a; font-weight:800; margin-bottom:3px }
+  .card .value{ font-size:12pt; font-weight:900; color:#0d1b3a; text-align:center }
+  .card.net{ background:#fff7f5; border-color:#ffe2dc }
+  .card.net .value{ color:var(--warnText) }
+
+  .amount{ margin-top:6mm; text-align:center }
+  .pill{ display:inline-block; padding:8px 14px; border-radius:999px; font-weight:900; font-size:11pt; background:var(--okA); color:var(--okText) }
+
+  @media print{ .sheet{ margin-top:0 } }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <div class="ticket">
+      <div class="wm">AL HAMAD</div>
+
+      <div class="head">
+        <div class="brand">
+          <h1>AL HAMAD COMPUTERIZED KANTA</h1>
+          <p>USMAN RICE MILL HAFIZABAD ROAD, VANIKE TARAR (0315-5568175)</p>
+        </div>
+        <div class="serial">Serial: {{ $record->id }}</div>
+      </div>
+
+      <div class="rule"></div>
+
+      <div class="grid">
+        <table class="kv">
+          <tr><td class="k">Customer</td><td class="v">{{ $record->party }}</td></tr>
+          <tr><td class="k">Vehicle #</td><td class="v">{{ $record->vehicle_number }}</td></tr>
+          <tr><td class="k">Operator #</td><td class="v">&nbsp; {{ $user->phone }}</td></tr>
+        </table>
+
+        <div class="qr-col">
+          <table class="kv">
+            <tr><td class="k">1st Date</td><td class="v">{{ date('Y-m-d', strtotime($record->first_date)) }}</td></tr>
+            <tr><td class="k">1st Time</td><td class="v">{{ date('H:i:s', strtotime($record->first_date)) }}</td></tr>
+            <tr><td class="k">2nd Date</td><td class="v">{{ $record->second_date ? date('Y-m-d', strtotime($record->second_date)) : '-' }}</td></tr>
+            <tr><td class="k">2nd Time</td><td class="v">{{ $record->second_date ? date('H:i:s', strtotime($record->second_date)) : '-' }}</td></tr>
+          </table>
+          <div class="qr-box">{!! $qrCode !!}</div>
+        </div>
+      </div>
+
+      <div class="rule" style="margin:4mm 0 2mm 0"></div>
+
+      <table class="kv">
+        <tr><td class="k">Material</td><td class="v">{{ $record->description }}</td></tr>
+      </table>
+      <div class="chips">
+        <div class="chip">Unit 40 Kg</div>
+        <div class="chip">Mound: {{ $record->net_weight ? number_format($record->net_weight / 40, 1) : '-' }}</div>
+      </div>
+
+      <div class="weights">
+        <div class="card">
+          <div class="label">1st Weight</div>
+          <div class="value">{{ $record->first_weight }} KG</div>
+        </div>
+        <div class="card">
+          <div class="label">2nd Weight</div>
+          <div class="value">{{ $record->second_weight ? "$record->second_weight KG" : '-' }}</div>
+        </div>
+        <div class="card net">
+          <div class="label">Net Weight</div>
+          <div class="value">{{ $record->net_weight ? "$record->net_weight KG" : '-' }}</div>
+        </div>
+      </div>
+
+      <div class="amount"><span class="pill">{{ $record->amount }} Rs. Received With Thanks</span></div>
+    </div>
+  </div>
+</body>
+</html>

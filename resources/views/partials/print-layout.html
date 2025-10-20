@@ -1,0 +1,380 @@
+<?php session_start(); ?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al Hammad Computerized Kanta | Vanike Tarar</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+        }
+
+        #body {
+            font-family: "Poppins", monospace;
+            background: url(background.jpg) no-repeat;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100dvh;
+            width: 100%;
+            color: #fff;
+        }
+
+        .container {
+            background-color: transparent;
+            backdrop-filter: blur(6px);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .row {
+            width: 100%;
+            margin: 5px 5px;
+            display: flex;
+            flex: 1;
+            justify-content: space-between;
+        }
+
+        .row label {
+            width: 30%;
+        }
+
+        .row5 button {
+            width: 30%;
+            background-color: transparent;
+            color: #fff;
+            outline: none;
+            border: none;
+            font-size: 16px;
+            text-align: left;
+        }
+
+        .row input {
+            width: 60%;
+            outline: none;
+            border: none;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        .row5 p {
+            background-color: #fff;
+            border-radius: 8px;
+            width: 60%;
+            font-size: 12px;
+            font-weight: 500;
+            color: rgb(70, 69, 69);
+            padding: 5px;
+        }
+
+        .row8 {
+            display: flex;
+            justify-content: center;
+        }
+
+        .row8 input {
+            width: 70%;
+            background-color: transparent;
+            outline: none;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            padding: 5px;
+            font-size: 18px;
+            transition: 0.7s;
+        }
+
+        .row8 input:hover {
+            background-color: #bd654a;
+        }
+
+        #printing {
+            display: block;
+            width: 100%;
+            height: 421px;
+            /* box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); */
+        }
+
+        #printing h1 {
+            text-align: center;
+        }
+
+        #printing h2 {
+            text-align: center;
+        }
+
+        .fside {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            width: 60%;
+            height: 100%;
+        }
+
+        .sside {
+            width: 40%;
+            height: 100%;
+        }
+
+        .frow {
+            border: 1px solid black;
+            border-radius: 8px;
+            margin: 3px;
+            width: 97%;
+        }
+
+        .data {
+            display: flex;
+            flex: 1;
+            height: 80%;
+            text-align: center;
+            font-size: 18px;
+            font-family: serif;
+        }
+
+        .data input {
+            border: none;
+            outline: none;
+            background-color: transparent;
+            color: black;
+            font-family: serif;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .frow1 input {
+            width: 60%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+            text-align: left;
+        }
+
+        .frow1 label {
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .frow2 .inrow1 {
+            background-color: rgb(172, 172, 172);
+            border-radius: 7px 7px 0 0;
+        }
+
+        .frow2 .inrow1 p {
+            display: inline-block;
+            width: 24%;
+            padding: 10px;
+        }
+
+        .frow2 .inrow2 input {
+            display: inline-block;
+            width: 24%;
+            padding: 10px;
+            overflow-x: visible;
+        }
+
+        .frow2 .inrow3 input {
+            display: inline-block;
+            width: 24%;
+            padding: 10px;
+            overflow-x: visible;
+        }
+
+        .frow3 {
+            background-color: rgb(172, 172, 172);
+        }
+
+        .frow3 p {
+            width: 49%;
+            text-align: center;
+            display: inline-block;
+            padding: 10px;
+        }
+
+        .frow4 input {
+            width: 45%;
+            margin-left: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .frow4 div input {
+            width: 40%;
+        }
+
+        .frow4 div {
+            display: inline-block;
+            width: 47%;
+        }
+
+        .frow5 input {
+            width: 27%;
+            margin-left: 5px;
+            padding: 10px;
+            text-align: left;
+            font-size: 15px;
+        }
+
+        .frow5 p {
+            display: inline-block;
+            width: 20%;
+            font-weight: bold;
+            text-align: right;
+            font-size: 16px;
+        }
+
+        .srow {
+            border: 1px solid black;
+            border-radius: 8px;
+            padding: 8px;
+            margin: 5px;
+            display: flex;
+        }
+
+        .srow1 .inrow1 p {
+            width: 100%;
+        }
+
+        .srow1 .inrow2 p {
+            width: 100%;
+        }
+
+        .srow1 {
+            justify-content: center;
+            flex-direction: column;
+            height: 95px;
+        }
+
+        .srow2 input {
+            font-weight: bolder;
+            width: 60%;
+            text-align: center;
+        }
+
+        .srow2 p {
+            width: 40%;
+        }
+
+        .srow3 input {
+            font-weight: bolder;
+            width: 60%;
+            text-align: center;
+        }
+
+        .srow3 p {
+            width: 40%;
+        }
+
+        .srow4 input {
+            font-weight: bolder;
+            width: 60%;
+            text-align: center;
+        }
+
+        .srow4 p {
+            width: 40%;
+        }
+
+        .srow5 {
+            justify-content: center;
+        }
+
+        .srow6 {
+            justify-content: center;
+        }
+
+        .srow6 input {
+            text-align: center;
+        }
+    </style>
+    <script>
+        window.onload = function () {
+            window.print();
+        };
+    </script>
+</head>
+
+<body>
+    <div id="printing">
+        <h1>AL HAMD COMPUTERIZED KANTA</h1>
+        <h2>USMAN RICE MILL HAFIZABAD ROAD, VANIKE TARAR</h2>
+        <div class="data">
+            <div class="fside">
+                <div class="frow frow1">
+                    <label for="pCustomer_Name">Customer Name:</label>
+                    <input id="pCustomer_Name" value="" disabled>
+                </div>
+                <div class="frow frow2">
+                    <div class="inrow1">
+                        <p>Vehicle #</p>
+                        <p>Sr #</p>
+                        <p>Date</p>
+                        <p>Time</p>
+                    </div>
+                    <div class="inrow2">
+                        <input type="text" id="pveh" value="" disabled>
+                        <input type="text" id="psr" value="" disabled>
+                        <input type="text" id="pfdate" value="" disabled>
+                        <input type="text" id="pftime" value="" disabled>
+                    </div>
+                    <div class="inrow3">
+                        <input type="text" id="pveh" value="" disabled>
+                        <input type="text" id="psr" value="" disabled>
+                        <input type="text" id="psdate" value="" disabled>
+                        <input type="text" id="pstime" value="" disabled>
+                    </div>
+                </div>
+                <div class="frow frow3">
+                    <p>Discription</p>
+                    <p>Mounds</p>
+                </div>
+                <div class="frow frow4">
+                    <input type="text" id="pdiscip" disabled value="">
+                    <div style="display: inline-block;">
+                        <input type="text" disabled value="40 Kg">
+                        <input type="text" id="pmounds" disabled value="">
+                    </div>
+                </div>
+                <!-- <div class="frow frow5">
+                    <p>1st Time:</p>
+                    <input type="text" disabled value="Without Driver" id="pft">
+                    <p>2nd Time:</p>
+                    <input type="text" disabled value="Without Driver" id="pst">
+                </div> -->
+            </div>
+            <div class="sside">
+                <div class="srow srow1">
+                    <div class="inrow1">
+
+                    </div>
+                    <div class="inrow2">
+
+                    </div>
+                </div>
+                <div class="srow srow2">
+                    <input type="text" disabled id="pfweight" value="">
+                    <p>1st Weight</p>
+                </div>
+                <div class="srow srow3">
+                    <input type="text" disabled id="psweight" value="">
+                    <p>2nd Weight</p>
+                </div>
+                <div class="srow srow4">
+                    <input type="text" disabled id="pnetweight" value="">
+                    <p>Net Weight</p>
+                </div>
+                <!-- <div class="srow srow5">Received With Thanks</div> -->
+                <div class="srow srow6"><input type="text" value="" id="pamount" disabled></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ticket Details — Al Hamad Computerized Kanta</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Poppins",Arial,sans-serif;
+    background:#f1f5fa;
+    color:#0f141a;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding:24px 12px;
+    min-height:100vh;
+  }
+
+  .ticket{
+    background:#fff;
+    border-radius:12px;
+    border:1.6px solid #e5ebf3;
+    box-shadow:0 8px 32px rgba(0,0,0,0.06);
+    width:100%;
+    max-width:700px;
+    padding:18px 20px 22px;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .ticket::before{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(135deg,#f7faff 0%,#f4fff9 100%);
+    opacity:.4;
+    pointer-events:none;
+  }
+
+  .head{
+    position:relative;
+    z-index:1;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  .brand h1{
+    font-size:1.1rem;
+    margin:0;
+    color:#0a73f0;
+    font-weight:800;
+  }
+
+  .brand p{
+    font-size:.8rem;
+    color:#43556a;
+    margin-top:2px;
+  }
+
+  .serial{
+    font-weight:800;
+    font-size:.85rem;
+    color:#0a3a8f;
+    background:linear-gradient(90deg,#eef4ff,#f4fffb);
+    padding:4px 12px;
+    border-radius:999px;
+  }
+
+  .divider{
+    height:3px;
+    border-radius:3px;
+    background:linear-gradient(90deg,#0a73f0,#16c1a6,transparent 70%);
+    margin:10px 0 14px;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:.9rem;
+  }
+  td{padding:3px 0}
+  .k{width:42%;color:#6a7380;font-weight:600;font-size:.85rem;}
+  .v{font-weight:700;color:#111;}
+
+  .chips{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    margin-top:6px;
+  }
+  .chip{
+    padding:5px 10px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:.8rem;
+    background:#f5faff;
+    color:#0a2a66;
+    border:1px solid #dce6f7;
+  }
+
+  .weights{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+    gap:10px;
+    margin-top:18px;
+  }
+  .card{
+    background:#fbfdff;
+    border:1px solid #e6edf6;
+    border-radius:10px;
+    padding:10px;
+    text-align:center;
+  }
+  .card label{
+    display:block;
+    font-size:.8rem;
+    font-weight:700;
+    color:#39465a;
+    margin-bottom:4px;
+  }
+  .card span{
+    display:block;
+    font-size:1.05rem;
+    font-weight:900;
+    color:#0d1b3a;
+  }
+  .card.net{
+    background:#fff7f5;
+    border-color:#ffe2dc;
+  }
+  .card.net span{color:#812018;}
+
+  .amount{
+    margin-top:22px;
+    text-align:center;
+  }
+  .pill{
+    display:inline-block;
+    background:#ecfff5;
+    color:#0e5a33;
+    border:1px solid #b8eacb;
+    padding:10px 20px;
+    border-radius:999px;
+    font-weight:900;
+    font-size:1rem;
+    box-shadow:0 0 2px rgba(0,0,0,0.05);
+  }
+
+  .foot{
+    text-align:center;
+    font-size:.8rem;
+    color:#6a7380;
+    margin-top:18px;
+    border-top:1px dashed #d3dae3;
+    padding-top:8px;
+  }
+
+  @media(max-width:600px){
+    .grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+  <div class="ticket">
+    <div class="head">
+      <div class="brand">
+        <h1>AL HAMAD COMPUTERIZED KANTA</h1>
+        <p>Usman Rice Mill Hafizabad Road, Vanike Tarar (0315-5568175)</p>
+      </div>
+      <div class="serial">Serial: 1023</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="grid">
+      <table>
+        <tr><td class="k">Customer</td><td class="v">Muhammad Farhan</td></tr>
+        <tr><td class="k">Vehicle #</td><td class="v">LEH-3245</td></tr>
+        <tr><td class="k">Operator #</td><td class="v">0312-4567890</td></tr>
+      </table>
+
+      <table>
+        <tr><td class="k">1st Date</td><td class="v">2025-10-18</td></tr>
+        <tr><td class="k">1st Time</td><td class="v">09:32:45</td></tr>
+        <tr><td class="k">2nd Date</td><td class="v">2025-10-18</td></tr>
+        <tr><td class="k">2nd Time</td><td class="v">10:10:22</td></tr>
+      </table>
+    </div>
+
+    <div class="divider" style="margin:14px 0 10px;"></div>
+
+    <table>
+      <tr><td class="k">Material</td><td class="v">Rice Husk</td></tr>
+    </table>
+    <div class="chips">
+      <div class="chip">Unit 40 Kg</div>
+      <div class="chip">Mound: 115.0</div>
+    </div>
+
+    <div class="weights">
+      <div class="card">
+        <label>1st Weight</label>
+        <span>15,200 KG</span>
+      </div>
+      <div class="card">
+        <label>2nd Weight</label>
+        <span>10,600 KG</span>
+      </div>
+      <div class="card net">
+        <label>Net Weight</label>
+        <span>4,600 KG</span>
+      </div>
+    </div>
+
+    <div class="amount">
+      <div class="pill">9,200 Rs. Received With Thanks</div>
+    </div>
+
+    <div class="foot">
+      Verified by system — Thank you for visiting Al Hamad Computerized Kanta.
+    </div>
+  </div>
+</body>
+</html>
