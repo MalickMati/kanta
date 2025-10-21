@@ -68,6 +68,7 @@
         flex: 1;
         padding: 1rem 0;
         overflow-y: auto;
+        overscroll-behavior: contain;
     }
 
     /* Custom scrollbar for sidebar */
@@ -368,38 +369,61 @@
 </aside>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const sidebar = document.getElementById('sidebar');
-        const toggleSidebar = document.getElementById('toggleSidebar');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
+document.addEventListener('DOMContentLoaded', function () {
+    const sidebar = document.getElementById('sidebar');
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-        toggleSidebar.addEventListener('click', function () {
-            sidebar.classList.toggle('collapsed');
-        });
+    const SIDEBAR_STATE_KEY = 'sidebar-collapsed';
+    const MOBILE_VISIBLE_KEY = 'sidebar-mobile-visible';
 
-        mobileMenuBtn.addEventListener('click', function () {
-            sidebar.classList.add('mobile-visible');
-            sidebarOverlay.classList.add('active');
-        });
+    // 🔹 Restore sidebar state from localStorage
+    const isCollapsed = localStorage.getItem(SIDEBAR_STATE_KEY) === 'true';
+    const isMobileVisible = localStorage.getItem(MOBILE_VISIBLE_KEY) === 'true';
 
-        sidebarOverlay.addEventListener('click', function () {
-            sidebar.classList.remove('mobile-visible');
-            sidebarOverlay.classList.remove('active');
-        });
+    if (isCollapsed) sidebar.classList.add('collapsed');
+    if (isMobileVisible && window.innerWidth <= 768) {
+        sidebar.classList.add('mobile-visible');
+        sidebarOverlay.classList.add('active');
+    }
 
-        logoutBtn.addEventListener('click', function () {
-            window.location.href = '{{ route('logout') }}';
-        });
-
-        function handleResize() {
-            if (window.innerWidth > 768) {
-                sidebar.classList.remove('mobile-visible');
-                sidebarOverlay.classList.remove('active');
-            }
-        }
-        window.addEventListener('resize', handleResize);
+    // 🔹 Handle sidebar toggle (desktop)
+    toggleSidebar.addEventListener('click', function () {
+        sidebar.classList.toggle('collapsed');
+        const collapsed = sidebar.classList.contains('collapsed');
+        localStorage.setItem(SIDEBAR_STATE_KEY, collapsed);
     });
 
+    // 🔹 Mobile menu toggle
+    mobileMenuBtn.addEventListener('click', function () {
+        sidebar.classList.add('mobile-visible');
+        sidebarOverlay.classList.add('active');
+        localStorage.setItem(MOBILE_VISIBLE_KEY, 'true');
+    });
+
+    // 🔹 Overlay click to close sidebar (mobile)
+    sidebarOverlay.addEventListener('click', function () {
+        sidebar.classList.remove('mobile-visible');
+        sidebarOverlay.classList.remove('active');
+        localStorage.setItem(MOBILE_VISIBLE_KEY, 'false');
+    });
+
+    // 🔹 Logout redirect
+    logoutBtn.addEventListener('click', function () {
+        window.location.href = '{{ route('logout') }}';
+    });
+
+    // 🔹 Handle window resize: reset mobile sidebar if going to desktop
+    function handleResize() {
+        if (window.innerWidth > 768) {
+            sidebar.classList.remove('mobile-visible');
+            sidebarOverlay.classList.remove('active');
+            localStorage.setItem(MOBILE_VISIBLE_KEY, 'false');
+        }
+    }
+
+    window.addEventListener('resize', handleResize);
+});
 </script>

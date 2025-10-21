@@ -154,7 +154,7 @@
                         if (res.redirect) {
                             setTimeout(() => {
                                 location.href = res.redirect;
-                            }, 2000);
+                            }, 400);
                         }
                     } else {
                         showToast(res.message || 'Invalid credentials', 'error');

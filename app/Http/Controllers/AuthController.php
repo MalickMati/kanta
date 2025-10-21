@@ -79,9 +79,7 @@ class AuthController extends Controller
         if(!Auth::check() && Auth::user()->role !== 'admin') {
             return redirect()->route('dashboard')->with('error', 'Only admin can take backups');
         }
-
         Artisan::call('backup:db');
-
         return redirect()->back()->with('success', 'Backup successfull!');
     }
 }

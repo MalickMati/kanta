@@ -280,8 +280,8 @@
             <label for="firstWeight" class="required">First Weight (kg)</label>
             <div class="input-with-button">
               <input type="number" id="firstWeight" name="firstWeight" placeholder="0" min="0" step="0.01" required>
-              <button type="button" class="get-weight-btn" id="getWeightBtn" style="display:none">
-                <i class="fas fa-sync-alt"></i>
+              <button type="button" class="get-weight-btn" id="getWeightBtn">
+                <i class="svg-icon"><x-icons name="refresh"/></i>
                 Get Weight
               </button>
             </div>
@@ -333,23 +333,15 @@
       // Get all form inputs for Enter key navigation
       const formInputs = Array.from(firstWeightForm.querySelectorAll('input:not([readonly]):not([type="button"]):not([type="submit"])'));
 
-      getWeightBtn.addEventListener('click', function () {
+      getWeightBtn.addEventListener('click', async e => {
         getWeightBtn.classList.add('loading');
         getWeightBtn.disabled = true;
+        
+        const res = await ajaxRequest("{{ route('get.weight') }}", "GET",);
 
-        // Simulate reading from serial port
-        setTimeout(() => {
-          const randomWeight = (Math.random() * 20000 + 5000).toFixed(2);
-
-          firstWeightInput.value = randomWeight;
-
-          weightValue.textContent = randomWeight;
-          weightDisplay.style.display = 'block';
-
-          // Remove loading state
-          getWeightBtn.classList.remove('loading');
-          getWeightBtn.disabled = false;
-        }, 1500);
+        firstWeightInput.value = res.weight;
+        getWeightBtn.classList.remove('loading');
+        getWeightBtn.disabled = false;
       });
 
       formInputs.forEach((input, index) => {

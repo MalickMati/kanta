@@ -7,7 +7,9 @@ use App\Models\Detail;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -15,9 +17,9 @@ use Illuminate\Support\Str;
 
 class WeightPages extends Controller
 {
-    public function print (Request $request)
+    public function print(Request $request)
     {
-        if(!Auth::check()) {
+        if (!Auth::check()) {
             return redirect(route('login.form'))->with('error', 'Authenticated user not found');
         }
 
@@ -27,7 +29,7 @@ class WeightPages extends Controller
             'serial.exists' => 'No valid record was found',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors()->first(),
@@ -38,7 +40,7 @@ class WeightPages extends Controller
 
         $record = Detail::where('id', '=', $data['serial'])->first();
 
-        if($record) {
+        if ($record) {
             return response()->json([
                 'success' => true,
                 'message' => 'Please Wait',
@@ -52,9 +54,9 @@ class WeightPages extends Controller
         ]);
     }
 
-    public function fetchRecord (Request $request)
+    public function fetchRecord(Request $request)
     {
-        if(!Auth::check()){
+        if (!Auth::check()) {
             return redirect(route('login.form'))->with('error', 'You are not authorized to perform this action');
         }
 
@@ -64,7 +66,7 @@ class WeightPages extends Controller
             'serial.exists' => 'No record was found',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors()->first(),
@@ -73,7 +75,7 @@ class WeightPages extends Controller
 
         $record = Detail::where('id', $request->serial)->first();
 
-        if(!$record) {
+        if (!$record) {
             return response()->json([
                 'success' => false,
                 'message' => 'No record was found',
@@ -87,9 +89,9 @@ class WeightPages extends Controller
         ]);
     }
 
-    public function savefirst (Request $request)
+    public function savefirst(Request $request)
     {
-        if(!Auth::check()){
+        if (!Auth::check()) {
             return redirect()->route('login.form')->with('error', 'Not allowed to perform this action');
         }
 
@@ -104,7 +106,7 @@ class WeightPages extends Controller
             'serial.unique' => 'This is already used serial',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors()->first(),
@@ -124,7 +126,7 @@ class WeightPages extends Controller
             'created_by' => Auth::user()->username,
         ]);
 
-        if(!$record){
+        if (!$record) {
             return response()->json([
                 'success' => false,
                 'message' => 'Record not saved',
@@ -140,9 +142,9 @@ class WeightPages extends Controller
         ]);
     }
 
-    public function savesecond (Request $request)
+    public function savesecond(Request $request)
     {
-        if(!Auth::check()){
+        if (!Auth::check()) {
             return redirect()->route('login.form')->with('error', 'You are not allowed to access this page');
         }
 
@@ -154,7 +156,7 @@ class WeightPages extends Controller
             'serial.exists' => 'No first record was found',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors()->first(),
@@ -165,7 +167,7 @@ class WeightPages extends Controller
 
         $record = Detail::where('id', '=', $data['serial'])->first();
 
-        if(!$record) {
+        if (!$record) {
             return response()->json([
                 'success' => false,
                 'message' => 'Record not found',
@@ -177,7 +179,7 @@ class WeightPages extends Controller
 
         $net = null;
 
-        if((int) $record->second_weight > (int) $record->first_weight){
+        if ((int) $record->second_weight > (int) $record->first_weight) {
             $net = $record->second_weight - $record->first_weight;
         } else {
             $net = $record->first_weight - $record->second_weight;
@@ -198,9 +200,9 @@ class WeightPages extends Controller
         ]);
     }
 
-    public function savenewuser (Request $request)
+    public function savenewuser(Request $request)
     {
-        if(!Auth::check() && Auth::user()->role !== 'admin'){
+        if (!Auth::check() && Auth::user()->role !== 'admin') {
             return redirect()->route('login.form')->with('error', 'Session not found');
         }
 
@@ -212,7 +214,7 @@ class WeightPages extends Controller
             'role' => 'required|in:operator,admin',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors()->first(),
@@ -234,9 +236,9 @@ class WeightPages extends Controller
         ]);
     }
 
-    public function deleteRecord (Request $request)
+    public function deleteRecord(Request $request)
     {
-        if(!Auth::check() && Auth::user()->role !== 'admin'){
+        if (!Auth::check() && Auth::user()->role !== 'admin') {
             return response()->json([
                 'success' => false,
                 'message' => 'Only admin is allowed to delete the record!',
@@ -249,7 +251,7 @@ class WeightPages extends Controller
             'serial.exists' => 'No record was found to show',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors()->first(),
@@ -260,7 +262,7 @@ class WeightPages extends Controller
 
         $record = Detail::where('id', '=', $data['serial'])->first();
 
-        if(!$record){
+        if (!$record) {
             return response()->json([
                 'success' => false,
                 'message' => 'No record was found',
@@ -275,9 +277,9 @@ class WeightPages extends Controller
         ]);
     }
 
-    public function updateRecord (Request $request)
+    public function updateRecord(Request $request)
     {
-        if(!Auth::check() && Auth::user()->role !== 'admin'){
+        if (!Auth::check() && Auth::user()->role !== 'admin') {
             return response()->json([
                 'success' => false,
                 'message' => 'Admin is allowed to edit this record'
@@ -294,7 +296,7 @@ class WeightPages extends Controller
             'description' => 'nullable|string|max:25',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors()->first(),
@@ -305,7 +307,7 @@ class WeightPages extends Controller
 
         $record = Detail::where('id', '=', $data['serial'])->first();
 
-        if(!$record) {
+        if (!$record) {
             return response()->json([
                 'success' => false,
                 'message' => 'Record not found',
@@ -325,6 +327,16 @@ class WeightPages extends Controller
             'success' => true,
             'message' => 'Record updated successfully!',
             'record' => $record,
+        ]);
+    }
+
+    public function get_weight()
+    {
+        // pm2 start "php artisan weight:listen --device=/dev/ttyUSB0" --name weight-listener
+
+        return response()->json([
+            'weight' => Cache::get('current_weight', 0),
+            'updated_at' => now()->toDateTimeString(),
         ]);
     }
 }

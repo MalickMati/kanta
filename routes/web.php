@@ -9,6 +9,8 @@ Route::get('/', function () {
     return view('Auth.login');
 });
 
+Route::get('/weight', [WeightPages::class, 'get_weight'])->name('get.weight');
+
 Route::get('/show/{id}', [ShowPages::class, 'showrecorduser'])->name('show');
 
 Route::group(['prefix' => 'auth'], function () {

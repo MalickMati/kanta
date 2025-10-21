@@ -364,7 +364,7 @@
             <input type="number" id="searchSerial" name="searchSerial" placeholder="Enter record ID (e.g., 1, 2, 3)"
               min="1" required>
             <button type="button" class="search-btn" id="searchBtn">
-              <i class="svg-icon"><x-icons name="search"/></i>
+              <i class="svg-icon"><x-icons name="search" /></i>
               Search Record
             </button>
           </div>
@@ -420,8 +420,8 @@
             <label for="secondWeight" class="required">Second Weight (kg)</label>
             <div class="input-with-button">
               <input type="number" id="secondWeight" name="secondWeight" placeholder="0" min="0" step="0.01" required>
-              <button type="button" class="get-weight-btn" id="getWeightBtn" style="display: none;">
-                <i class="fas fa-sync-alt"></i>
+              <button type="button" class="get-weight-btn" id="getWeightBtn">
+                <i class="svg-icon"><x-icons name="refresh" /></i>
                 Get Weight
               </button>
             </div>
@@ -446,11 +446,11 @@
 
         <div class="form-actions">
           <button type="button" class="btn btn-secondary" id="cancelBtn">
-            <i class="svg-icon"><x-icons name="close"/></i>
+            <i class="svg-icon"><x-icons name="close" /></i>
             Cancel
           </button>
           <button type="submit" class="btn btn-primary" id="sub_btn">
-            <i class="svg-icon"><x-icons name="save"/></i>
+            <i class="svg-icon"><x-icons name="save" /></i>
             Save Second Weight
           </button>
         </div>
@@ -479,7 +479,7 @@
       const cancelBtn = document.getElementById('cancelBtn');
       const second_serial = document.getElementById('second_serial');
       const Description = document.getElementById('Description');
-      const sub_btn =document.getElementById('sub_btn');
+      const sub_btn = document.getElementById('sub_btn');
 
       // Search for record
       searchBtn.addEventListener('click', async e => {
@@ -500,7 +500,7 @@
 
         const res = await ajaxRequest('{{ route('get.record') }}', 'POST', formData);
 
-        if(res.success) {
+        if (res.success) {
           showToast(res.message || 'Record Found', 'success');
           loadRecordData(res.record);
           secondWeightFormCard.classList.remove('hidden');
@@ -508,7 +508,7 @@
         } else {
           showToast(res.message || 'Record Not Found', 'error');
         }
-        
+
         searchBtn.classList.remove('loading');
         searchBtn.disabled = false;
       });
@@ -530,33 +530,18 @@
       }
 
       // Get weight from serial port simulation
-      getWeightBtn.addEventListener('click', function () {
-        // Show loading state
+      getWeightBtn.addEventListener('click', async e => {
         getWeightBtn.classList.add('loading');
         getWeightBtn.disabled = true;
 
-        // Simulate reading from serial port
-        setTimeout(() => {
-          // Generate a random weight between 5000 and 15000 kg (lighter than first weight)
-          const randomWeight = (Math.random() * 10000 + 5000).toFixed(2);
+        const res = await ajaxRequest("{{ route('get.weight') }}", "GET",);
 
-          // Update the input field
-          secondWeightInput.value = randomWeight;
+        secondWeightInput.value = res.weight;
 
-          // Show the weight display
-          weightValue.textContent = randomWeight;
-          weightDisplay.style.display = 'block';
-
-          // Calculate and show net weight
-          calculateNetWeight();
-
-          // Remove loading state
-          getWeightBtn.classList.remove('loading');
-          getWeightBtn.disabled = false;
-        }, 1500);
+        getWeightBtn.classList.remove('loading');
+        getWeightBtn.disabled = false;
       });
 
-      // Form submission
       secondWeightForm.addEventListener('submit', async e => {
         e.preventDefault();
 
@@ -571,12 +556,12 @@
           alert('Please enter the second weight');
           return;
         }
-        
+
         const res = await ajaxRequest('{{ route('save.second.weight') }}', 'POST', formData);
 
-        if(res.success) {
+        if (res.success) {
           showToast(res.message, "success");
-          if(res.redirect){
+          if (res.redirect) {
             setTimeout(() => {
               location.href = res.redirect;
             }, 450);
