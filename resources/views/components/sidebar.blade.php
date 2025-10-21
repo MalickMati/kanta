@@ -284,7 +284,7 @@
             <i class="svg-icon"><x-icons name="weight" /></i>
         </div>
         <div class="brand-text">
-            <h2>Weight Manager</h2>
+            <h2>Al Hammd</h2>
             <p>Vehicle Management</p>
         </div>
     </div>
@@ -329,8 +329,7 @@
                 <span class="nav-text">Show Records</span>
             </a>
             @if (Auth::user()->role === 'admin')
-                <a href="{{ route('edit.page') }}"
-                    class="nav-item {{ request()->routeIs('edit.page') ? 'active' : '' }}">
+                <a href="{{ route('edit.page') }}" class="nav-item {{ request()->routeIs('edit.page') ? 'active' : '' }}">
                     <i class="svg-icon"><x-icons name="edit" /></i>
                     <span class="nav-text">Edit Record</span>
                 </a>
@@ -341,15 +340,22 @@
                 </a>
             @endif
         </div>
-        @if (Auth::user()->role === 'admin')
-            <div class="nav-section">
-                <div class="nav-title">Users</div>
+        <div class="nav-section">
+            <div class="nav-title">Profile</div>
+            <a href="{{ route('profile.page') }}"
+                class="nav-item {{ request()->routeIs('profile.page') ? 'active' : '' }}">
+                <i class="svg-icon"><x-icons name="profile" /></i>
+                <span class="nav-text">Profile</span>
+            </a>
+            @if (Auth::user()->role === 'admin')
                 <a href="{{ route('add.new.user') }}"
                     class="nav-item {{ request()->routeIs('add.new.user') ? 'active' : '' }}">
                     <i class="svg-icon"><x-icons name="add-user" /></i>
                     <span class="nav-text">Add New User</span>
                 </a>
-            </div>
+            @endif
+        </div>
+        @if (Auth::user()->role === 'admin')
             <div class="nav-section">
                 <div class="nav-title">Backup</div>
                 <a href="{{ route('backup') }}" class="nav-item {{ request()->routeIs('backup') ? 'active' : '' }}">
@@ -369,61 +375,61 @@
 </aside>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const sidebar = document.getElementById('sidebar');
-    const toggleSidebar = document.getElementById('toggleSidebar');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    document.addEventListener('DOMContentLoaded', function () {
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-    const SIDEBAR_STATE_KEY = 'sidebar-collapsed';
-    const MOBILE_VISIBLE_KEY = 'sidebar-mobile-visible';
+        const SIDEBAR_STATE_KEY = 'sidebar-collapsed';
+        const MOBILE_VISIBLE_KEY = 'sidebar-mobile-visible';
 
-    // 🔹 Restore sidebar state from localStorage
-    const isCollapsed = localStorage.getItem(SIDEBAR_STATE_KEY) === 'true';
-    const isMobileVisible = localStorage.getItem(MOBILE_VISIBLE_KEY) === 'true';
+        // 🔹 Restore sidebar state from localStorage
+        const isCollapsed = localStorage.getItem(SIDEBAR_STATE_KEY) === 'true';
+        const isMobileVisible = localStorage.getItem(MOBILE_VISIBLE_KEY) === 'true';
 
-    if (isCollapsed) sidebar.classList.add('collapsed');
-    if (isMobileVisible && window.innerWidth <= 768) {
-        sidebar.classList.add('mobile-visible');
-        sidebarOverlay.classList.add('active');
-    }
+        if (isCollapsed) sidebar.classList.add('collapsed');
+        if (isMobileVisible && window.innerWidth <= 768) {
+            sidebar.classList.add('mobile-visible');
+            sidebarOverlay.classList.add('active');
+        }
 
-    // 🔹 Handle sidebar toggle (desktop)
-    toggleSidebar.addEventListener('click', function () {
-        sidebar.classList.toggle('collapsed');
-        const collapsed = sidebar.classList.contains('collapsed');
-        localStorage.setItem(SIDEBAR_STATE_KEY, collapsed);
-    });
+        // 🔹 Handle sidebar toggle (desktop)
+        toggleSidebar.addEventListener('click', function () {
+            sidebar.classList.toggle('collapsed');
+            const collapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem(SIDEBAR_STATE_KEY, collapsed);
+        });
 
-    // 🔹 Mobile menu toggle
-    mobileMenuBtn.addEventListener('click', function () {
-        sidebar.classList.add('mobile-visible');
-        sidebarOverlay.classList.add('active');
-        localStorage.setItem(MOBILE_VISIBLE_KEY, 'true');
-    });
+        // 🔹 Mobile menu toggle
+        mobileMenuBtn.addEventListener('click', function () {
+            sidebar.classList.add('mobile-visible');
+            sidebarOverlay.classList.add('active');
+            localStorage.setItem(MOBILE_VISIBLE_KEY, 'true');
+        });
 
-    // 🔹 Overlay click to close sidebar (mobile)
-    sidebarOverlay.addEventListener('click', function () {
-        sidebar.classList.remove('mobile-visible');
-        sidebarOverlay.classList.remove('active');
-        localStorage.setItem(MOBILE_VISIBLE_KEY, 'false');
-    });
-
-    // 🔹 Logout redirect
-    logoutBtn.addEventListener('click', function () {
-        window.location.href = '{{ route('logout') }}';
-    });
-
-    // 🔹 Handle window resize: reset mobile sidebar if going to desktop
-    function handleResize() {
-        if (window.innerWidth > 768) {
+        // 🔹 Overlay click to close sidebar (mobile)
+        sidebarOverlay.addEventListener('click', function () {
             sidebar.classList.remove('mobile-visible');
             sidebarOverlay.classList.remove('active');
             localStorage.setItem(MOBILE_VISIBLE_KEY, 'false');
-        }
-    }
+        });
 
-    window.addEventListener('resize', handleResize);
-});
+        // 🔹 Logout redirect
+        logoutBtn.addEventListener('click', function () {
+            window.location.href = '{{ route('logout') }}';
+        });
+
+        // 🔹 Handle window resize: reset mobile sidebar if going to desktop
+        function handleResize() {
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('mobile-visible');
+                sidebarOverlay.classList.remove('active');
+                localStorage.setItem(MOBILE_VISIBLE_KEY, 'false');
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+    });
 </script>

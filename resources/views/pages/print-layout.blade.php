@@ -1,202 +1,333 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Al Hammad Computerized Kanta | Vanike Tarar</title>
-<style>
-  /* ===== Compact, borderless, no shadows ===== */
-  *{box-sizing:border-box}
-  html,body{
-    margin:0; padding:0; background:#ffffff; color:#0f141a;
-    font-family: Arial, Helvetica, sans-serif; -webkit-print-color-adjust:exact; print-color-adjust:exact;
-    display:flex; justify-content:center; align-items:flex-start; padding-top:6mm;
-  }
-  @page{ size:A4 portrait; margin:0 }
-  @media print{ body{ padding-top:0 } }
+  <meta charset="UTF-8" />
+  <title>Ticket • Variant C</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box
+    }
 
-  /* --- Density controls --- */
-  :root{
-    --fz-s:8.6pt;
-    --fz:9.2pt;
-    --fz-l:12.5pt;
-    --lh:1.12;
-    --gap:4mm;
-    --gap-s:2.5mm;
-    --ink:#0f141a;
-    --muted:#5a6472;
-    --grad1:#0a73f0;
-    --grad2:#16c1a6;
-    --softA:#f4f9ff;
-    --softB:#f1fff8;
-    --warnA:#fff1ed;
-    --warnText:#812018;
-    --okA:#ecfff5;
-    --okText:#0e5a33;
-  }
+    @page {
+      size: A4 portrait;
+      margin: 0
+    }
 
-  /* Ticket block: half-A4 width, very compact height */
-  .ticket{
-    width:148mm;      /* A5 width */
-    padding:0 6mm 6mm 6mm;
-    line-height:var(--lh);
-    text-align:center;
-  }
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      color: #0f141a;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact
+    }
 
-  /* Slim hero band (12mm tall) */
-  .hero{
-    height:12mm; position:relative;
-    background:linear-gradient(90deg, var(--grad1), var(--grad2));
-    border-radius:8px; overflow:clip;
-  }
-  .hero::before{
-    content:""; position:absolute; inset:0;
-    background:
-      radial-gradient(18mm 8mm at 22% 60%, rgba(255,255,255,.55) 0 55%, transparent 56%),
-      radial-gradient(16mm 7mm at 70% 30%, rgba(255,255,255,.35) 0 55%, transparent 56%);
-    mix-blend-mode:soft-light;
-  }
-  .brand{
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:8px;
-    color:#ffffff;
-  }
-  .badge{
-    width:12mm; height:12mm; border-radius:5px;
-    background:linear-gradient(135deg, #ffd664, #ff7aa2);
-    display:flex; align-items:center; justify-content:center;
-    font-weight:900; letter-spacing:.4px; color:#1b1b1b; font-size:8.8pt;
-  }
-  .title{ text-align:left }
-  .title h1{ margin:0; font-size:var(--fz-l) }
-  .title p{ margin:1px 0 0 0; font-size:8pt; opacity:.95 }
+    :root {
+      --ink: #10151c;
+      --muted: #5a6472;
+      --accent: #0a73f0;
+      --accent2: #16c1a6;
+      --okA: #ecfff5;
+      --okText: #0e5a33;
+      --warnA: #fff1ed;
+      --warnText: #812018;
+      --fz: 9.6pt;
+      --fz-s: 8.6pt;
+      --fz-l: 12.5pt;
+      --lh: 1.15;
+    }
 
-  /* Serial chip just below hero, tiny padding */
-  .serial{ margin-top:2mm; text-align:right; font-weight:900; font-size:8.6pt; color:#0a3a8f }
-  .serial span{ background:linear-gradient(90deg,#eef4ff,#f4fffb); padding:3px 8px; border-radius:999px }
+    .sheet {
+      width: 190mm;
+      height: 148.5mm;
+      margin: 6mm auto 0;
+      display: flex;
+      align-items: flex-start;
+    }
 
-  /* Sections with ultra-thin gradient rule (no borders) */
-  .section{
-    text-align:left; margin:var(--gap-s) 0 1.5mm 0; font-weight:800; font-size:9.6pt; color:var(--ink);
-    position:relative;
-  }
-  .section::after{
-    content:""; display:block; height:2px; margin-top:3px;
-    background:linear-gradient(90deg, #004aad, #00c292, transparent 70%);
-  }
+    .ticket {
+      width: 100%;
+      background: #ffffff;
+      border: 1.6px solid #e5ebf3;
+      border-radius: 12px;
+      padding: 8mm;
+      position: relative;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, .06);
+    }
 
-  /* Grid: two columns, narrow gap */
-  .grid{ display:grid; grid-template-columns:1.05fr .95fr; gap:6mm; margin-top:1.5mm }
+    .wm {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .06;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48pt;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #0a73f0;
+    }
 
-  /* Key-value tables with zero borders, tight rows */
-  .kv{ width:100%; border-collapse:collapse; font-size:var(--fz) }
-  .kv td{ padding:2px 0 }               /* very tight row */
-  .k{ width:38%; color:var(--muted); font-weight:700; font-size:var(--fz-s) }
-  .v{ color:var(--ink); font-weight:800 }
+    .head {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4mm
+    }
 
-  /* Soft micro-panels instead of boxes */
-  .soft{ padding:4px 5px; border-radius:7px; background:linear-gradient(180deg,var(--softA),#f0f6ff) }
-  .soft.alt{ background:linear-gradient(180deg,var(--softB),#effeff) }
+    .brand {
+      text-align: left
+    }
 
-  /* Chips line for bags */
-  .chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:3px }
-  .chip{
-    padding:4px 8px; border-radius:999px; font-weight:800; font-size:8.8pt;
-    background:linear-gradient(180deg,#fff2e0,#ffe8c9); color:#5a2a00;
-  }
-  .chip.small{ background:linear-gradient(180deg,#eef4ff,#e6f0ff); color:#0a2a66 }
+    .brand h1 {
+      margin: 0;
+      font-size: var(--fz-l)
+    }
 
-  /* Weights: condensed */
-  .weights{ display:grid; gap:4px; margin-top:2mm }
-  .w{ display:grid; grid-template-columns:38% 62%; align-items:center; gap:6px }
-  .w .label{ font-size:var(--fz); font-weight:800; color:#1b2430 }
-  .w .value{
-    font-size:11pt; font-weight:900; text-align:center; padding:6px 0; border-radius:8px;
-    background:linear-gradient(180deg,#f3f8ff,#e8f1ff); color:#0d1b3a;
-  }
-  .w.net .value{ background:linear-gradient(180deg,var(--warnA),#ffe5dd); color:var(--warnText) }
+    .brand p {
+      margin: .5mm 0 0 0;
+      font-size: 8pt;
+      color: #1a3a60;
+      opacity: .85
+    }
 
-  /* Amount pill, small but prominent */
-  .amount{ margin-top:4mm; display:flex; justify-content:center }
-  .pill{
-    padding:7px 12px; border-radius:999px; font-weight:900; font-size:11pt;
-    background:linear-gradient(180deg,var(--okA),#dff7eb); color:var(--okText);
-  }
+    .serial {
+      font-weight: 900;
+      font-size: var(--fz-s);
+      color: #0a3a8f;
+      background: linear-gradient(90deg, #eef4ff, #f4fffb);
+      padding: 4px 10px;
+      border-radius: 999px
+    }
 
-  /* Footer micro text */
-  .foot{ margin-top:4mm; font-size:8pt; color:#6a7380; text-align:center }
-</style>
-<script>
-  window.onload = function(){ window.print(); }
-  window.addEventListener("afterprint", () => { window.history.back(); });
-</script>
+    .rule {
+      height: 3px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2), transparent 75%);
+      margin: 3mm 0 4mm 0
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 8mm
+    }
+
+    .kv {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--fz)
+    }
+
+    .kv td {
+      padding: 2px 0
+    }
+
+    .k {
+      width: 38%;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: var(--fz-s)
+    }
+
+    .v {
+      color: var(--ink);
+      font-weight: 800
+    }
+
+    .qr-col {
+      display: grid;
+      grid-template-columns: 1fr 28mm;
+      gap: 6mm
+    }
+
+    .qr-box {
+      width: 28mm;
+      height: 28mm;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(120% 120% at 50% 0%, #f3f8ff 0, #e7f1ff 60%, #e7fff6 100%);
+    }
+
+    .qr-box svg,
+    .qr-box img {
+      width: 92%;
+      height: auto
+    }
+
+    .chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 3px
+    }
+
+    .chip {
+      padding: 4px 8px;
+      border: 1px solid #dfe8f4;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 8.8pt;
+      color: #11305c;
+      background: #f7faff
+    }
+
+    .weights {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6mm;
+      margin-top: 3mm
+    }
+
+    .card {
+      border: 1px solid #e6edf6;
+      border-radius: 10px;
+      padding: 6px 8px;
+      background: #fbfdff
+    }
+
+    .card .label {
+      font-size: var(--fz-s);
+      color: #39465a;
+      font-weight: 800;
+      margin-bottom: 3px
+    }
+
+    .card .value {
+      font-size: 12pt;
+      font-weight: 900;
+      color: #0d1b3a;
+      text-align: center
+    }
+
+    .card.net {
+      background: #fff7f5;
+      border-color: #ffe2dc
+    }
+
+    .card.net .value {
+      color: var(--warnText)
+    }
+
+    .amount {
+      margin-top: 6mm;
+      text-align: center
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 11pt;
+      background: var(--okA);
+      color: var(--okText)
+    }
+
+    @media print {
+      .sheet {
+        margin-top: 0
+      }
+    }
+  </style>
+  <script>
+    window.onload = function () { window.print(); }
+    window.addEventListener("afterprint", () => { window.history.back(); });
+  </script>
 </head>
+
 <body>
-  <div class="ticket">
-    <!-- Compact hero -->
-    <div class="hero">
-      <div class="brand">
-        <div class="title">
-          <h1 style="text-align: center;">AL HAMAD COMPUTERIZED KANTA</h1>
+  <div class="sheet">
+    <div class="ticket">
+      <div class="wm">AL HAMAD</div>
+
+      <div class="head">
+        <div class="brand">
+          <h1>AL HAMAD COMPUTERIZED KANTA</h1>
           <p>USMAN RICE MILL HAFIZABAD ROAD, VANIKE TARAR (0315-5568175)</p>
         </div>
+        <div class="serial">Serial # {{ $record->id }}</div>
       </div>
-    </div>
 
-    <div class="serial"><span>Serial: {{ $record->id }}</span></div>
+      <div class="rule"></div>
 
-    <!-- Content -->
-    <div class="section">Customer & Vehicle</div>
-    <div class="grid">
+      <div class="grid">
+        <table class="kv">
+          <tr>
+            <td class="k">Customer</td>
+            <td class="v">{{ $record->party }}</td>
+          </tr>
+          <tr>
+            <td class="k">Vehicle #</td>
+            <td class="v">{{ $record->vehicle_number }}</td>
+          </tr>
+          <tr>
+            <td class="k">Operator #</td>
+            <td class="v">&nbsp; {{ $user->phone }}</td>
+          </tr>
+        </table>
+
+        <div class="qr-col">
+          <table class="kv">
+            <tr>
+              <td class="k">1st Date</td>
+              <td class="v">{{ date('Y-m-d', strtotime($record->first_date)) }}</td>
+            </tr>
+            <tr>
+              <td class="k">1st Time</td>
+              <td class="v">{{ date('H:i:s', strtotime($record->first_date)) }}</td>
+            </tr>
+            <tr>
+              <td class="k">2nd Date</td>
+              <td class="v">{{ $record->second_date ? date('Y-m-d', strtotime($record->second_date)) : '-' }}</td>
+            </tr>
+            <tr>
+              <td class="k">2nd Time</td>
+              <td class="v">{{ $record->second_date ? date('H:i:s', strtotime($record->second_date)) : '-' }}</td>
+            </tr>
+          </table>
+          <div class="qr-box">{!! $qrCode !!}</div>
+        </div>
+      </div>
+
+      <div class="rule" style="margin:4mm 0 2mm 0"></div>
+
       <table class="kv">
-        <tr><td class="k">Customer</td><td class="v">{{ $record->party }}</td></tr>
-        <tr><td class="k">Vehicle #</td><td class="v">{{ $record->vehicle_number }}</td></tr>
-        <tr><td class="k">Operator #</td><td class="v">&nbsp; {{ $user->phone }}</td></tr>
+        <tr>
+          <td class="k">Material</td>
+          <td class="v">{{ $record->description }}</td>
+        </tr>
       </table>
+      <div class="chips">
+        <div class="chip">Unit 40 Kg</div>
+        <div class="chip">Mound: {{ $record->net_weight ? number_format($record->net_weight / 40, 1) : '-' }}</div>
+      </div>
 
-      <div>
-        <div class="soft">
-          <table class="kv">
-            <tr><td class="k">1st Date</td><td class="v">{{ date('Y-m-d', strtotime($record->first_date)) }}</td></tr>
-            <tr><td class="k">1st Time</td><td class="v">{{ date('H:i:s', strtotime($record->first_date)) }}</td></tr>
-          </table>
+      <div class="weights">
+        <div class="card">
+          <div class="label">1st Weight</div>
+          <div class="value">{{ $record->first_weight }} KG</div>
         </div>
-        <div class="soft alt" style="margin-top:4px">
-          <table class="kv">
-            <tr><td class="k">2nd Date</td><td class="v">{{ $record->second_date ? date('Y-m-d', strtotime($record->second_date)) : '-' }}</td></tr>
-            <tr><td class="k">2nd Time</td><td class="v">{{ $record->second_date ? date('H:i:s', strtotime($record->second_date)) : '-' }}</td></tr>
-          </table>
+        <div class="card">
+          <div class="label">2nd Weight</div>
+          <div class="value">{{ $record->second_weight ? "$record->second_weight KG" : '-' }}</div>
+        </div>
+        <div class="card net">
+          <div class="label">Net Weight</div>
+          <div class="value">{{ $record->net_weight ? "$record->net_weight KG" : '-' }}</div>
         </div>
       </div>
+
+      <div class="amount"><span class="pill">{{ $record->amount }} Rs. Received With Thanks</span></div>
     </div>
-
-    <div class="section">Description</div>
-    <table class="kv">
-      <tr><td class="k">Material</td><td class="v">{{ $record->description }}</td></tr>
-    </table>
-    <div class="chips">
-      <div class="chip small">Unit 40 Kg</div>
-      <div class="chip">Mound: {{ $record->net_weight ? number_format($record->net_weight / 40, 1) : '-' }}</div>
-    </div>
-
-    <div class="section">Weights</div>
-    <div class="weights">
-      <div class="w">
-        <div class="label">1st Weight</div>
-        <div class="value">{{ $record->first_weight }} KG</div>
-      </div>
-      <div class="w">
-        <div class="label">2nd Weight</div>
-        <div class="value">{{ $record->second_weight ? "$record->second_weight KG" : '-' }}</div>
-      </div>
-      <div class="w net">
-        <div class="label">Net Weight</div>
-        <div class="value">{{ $record->net_weight ? "$record->net_weight KG" : '-' }}</div>
-      </div>
-    </div>
-
-    <div class="amount"><div class="pill">{{ $record->amount }} Rs. Received With Thanks</div></div>
-
-    <!-- <div class="foot">Keep this slip for your record. Reprints available on request.</div> -->
   </div>
 </body>
+
 </html>

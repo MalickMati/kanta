@@ -92,7 +92,7 @@ class ShowPages extends Controller
 
         $user = User::where('username', '=', $record->created_by)->first();
 
-        return view('pages.print-layout', compact('record', 'user', 'qrCode'));
+        return view('pages.print-layout', compact('record', 'user'));
     }
 
     public function addnewuser()

@@ -6,13 +6,16 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
-    public function showlogin ()
+    public function showlogin()
     {
-        if(Auth::check()){
+        if (Auth::check()) {
             return redirect()->route('dashboard')->with('success', 'Welcome Back');
         }
         return view('Auth.login');
@@ -27,7 +30,7 @@ class AuthController extends Controller
             'username.exists' => 'No user found with this username!',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors()->first()
@@ -37,7 +40,7 @@ class AuthController extends Controller
         $data = $validator->validated();
 
         $user = User::where('username', '=', $data['username'])->first();
-        if(!$user) {
+        if (!$user) {
             return response()->json([
                 'success' => false,
                 'message' => 'No user found!',
@@ -49,7 +52,7 @@ class AuthController extends Controller
             'password' => $data['password'],
         ];
 
-        if(Auth::attempt($credentials, false)){
+        if (Auth::attempt($credentials, false)) {
             $request->session()->regenerate();
 
             return response()->json([
@@ -75,11 +78,40 @@ class AuthController extends Controller
         return redirect(route('login.form'))->with('success', 'You have been logged out.');
     }
 
-    public function create_backup () {
-        if(!Auth::check() && Auth::user()->role !== 'admin') {
+    public function create_backup()
+    {
+        if (!Auth::check() && Auth::user()->role !== 'admin') {
             return redirect()->route('dashboard')->with('error', 'Only admin can take backups');
         }
         Artisan::call('backup:db');
         return redirect()->back()->with('success', 'Backup successfull!');
+    }
+
+    public function update(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:15'],
+            'phone' => ['nullable', 'string', 'max:12'],
+        ]);
+
+        $user->fill($validated)->save();
+
+        return back()->with('profile_updated', 'Profile updated successfully.');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'confirmed', 'min:1'],
+        ]);
+
+        $user = $request->user();
+        $user->password = Hash::make($request->input('password'));
+        $user->save();
+
+        return back()->with('password_updated', 'Password updated successfully.');
     }
 }

@@ -6,7 +6,8 @@ use App\Http\Controllers\WeightPages;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('Auth.login');
+    return view('pages.profile');
+    // return view('Auth.login');
 });
 
 Route::get('/weight', [WeightPages::class, 'get_weight'])->name('get.weight');
@@ -30,6 +31,9 @@ Route::post('/print', [WeightPages::class, 'print'])->name('print.post');
 Route::get('/printing/{id}', [ShowPages::class, 'showprintlayout'])->name('print.layout');
 Route::get('/edit', [ShowPages::class, 'showEdit'])->name('edit.page');
 Route::post('/update', [WeightPages::class, 'updateRecord'])->name('update.record');
+Route::get('/profile', function () {return view('pages.profile');})->name('profile.page');
+Route::put('/profile', [AuthController::class, 'update'])->name('profile.update');
+Route::put('/profile/password', [AuthController::class, 'updatePassword'])->name('profile.password.update');
 
 Route::get('/records', [ShowPages::class, 'recordsPage'])->name('records.page');
 Route::get('/records/periods', [ShowPages::class, 'periodOptions'])->name('records.periods');

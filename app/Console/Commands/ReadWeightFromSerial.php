@@ -191,3 +191,7 @@ class ReadWeightFromSerial extends Command
 }
 
 // pm2 start "php artisan weight:listen --device=/dev/ttyUSB0 --baud=9600 --cache-key=current_weight" --name weight-listener
+// sudo usermod -a -G dialout $USER
+// stty -F /dev/ttyS0 9600 cs8 -cstopb -parenb -ixon -ixoff -crtscts
+// cat /dev/ttyS0
+// php artisan weight:listen --device=/dev/ttyS0 --baud=9600
