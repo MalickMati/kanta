@@ -17,10 +17,7 @@ class BackupDatabase extends Command
         $password = env('DB_PASSWORD');
         $host     = env('DB_HOST', '127.0.0.1');
 
-        // === Destination folder (change this path to your drive) ===
-        // Windows example: D:\LaravelBackups
-        // Linux example: /media/m/008CCE6A8CCE59B4
-        $backupPath = '/media/m/008CCE6A8CCE59B4/LaravelBackups'; // ← change this to your own drive path
+        $backupPath = env('BACKUP_LOCATION');
 
         if (!is_dir($backupPath)) {
             mkdir($backupPath, 0755, true);

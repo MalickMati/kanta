@@ -21,32 +21,10 @@ class AdminWithDetailsSeeder extends Seeder
             'password' => Hash::make('password'),
             'role' => 'admin',
             'name' => 'Mati ur Rehman',
-            'phone' => $faker->phoneNumber,
+            'phone' => '0349-4134189',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-
-        // Create 200 details linked to the admin
-        // for ($i = 0; $i < 200; $i++) {
-        //     $firstWeight = $faker->numberBetween(1000, 5000);
-        //     $secondWeight = $faker->numberBetween($firstWeight, 10000);
-        //     $netWeight = $secondWeight - $firstWeight;
-
-        //     DB::table('details')->insert([
-        //         'vehicle_number' => strtoupper($faker->bothify('??###??')),
-        //         'party' => $faker->company,
-        //         'description' => $faker->sentence,
-        //         'first_weight' => $firstWeight,
-        //         'first_date' => $faker->date(),
-        //         'second_weight' => $secondWeight,
-        //         'second_date' => $faker->date(),
-        //         'net_weight' => (string) $netWeight,
-        //         'amount' => $netWeight * 50, // example calculation
-        //         'created_by' => $adminUsername,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ]);
-        // }
     }
 }
 

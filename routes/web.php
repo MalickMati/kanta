@@ -2,12 +2,12 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ShowPages;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WeightPages;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('pages.profile');
-    // return view('Auth.login');
+    return view('Auth.login');
 });
 
 Route::get('/weight', [WeightPages::class, 'get_weight'])->name('get.weight');
@@ -31,7 +31,7 @@ Route::post('/print', [WeightPages::class, 'print'])->name('print.post');
 Route::get('/printing/{id}', [ShowPages::class, 'showprintlayout'])->name('print.layout');
 Route::get('/edit', [ShowPages::class, 'showEdit'])->name('edit.page');
 Route::post('/update', [WeightPages::class, 'updateRecord'])->name('update.record');
-Route::get('/profile', function () {return view('pages.profile');})->name('profile.page');
+Route::get('/profile', [ShowPages::class, 'showprofile'])->name('profile.page');
 Route::put('/profile', [AuthController::class, 'update'])->name('profile.update');
 Route::put('/profile/password', [AuthController::class, 'updatePassword'])->name('profile.password.update');
 
@@ -46,3 +46,8 @@ Route::post('/delete/record', [WeightPages::class, 'deleteRecord'])->name('delet
 
 Route::get('/add/user', [ShowPages::class, 'addnewuser'])->name('add.new.user');
 Route::post('/add/user', [WeightPages::class, 'savenewuser'])->name('save.new.user');
+Route::get('/users', [ShowPages::class, 'showallusers'])->name('all.users');
+Route::get('/users/fetch', [UserController::class, 'fetch'])->name('users.fetch');
+Route::patch('/users/{user}/toggle', [UserController::class, 'toggle'])->name('users.toggle');
+Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');

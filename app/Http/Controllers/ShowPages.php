@@ -87,8 +87,8 @@ class ShowPages extends Controller
             return redirect()->route('print.record')->with('error', 'Please send the serial to that page');
         }
 
-        $url = "https://kanta.malick.site/show/$record->id";
-        $qrCode = QrCode::size(60)->generate($url);
+        // $url = "https://kanta.malick.site/show/$record->id";
+        // $qrCode = QrCode::size(60)->generate($url);
 
         $user = User::where('username', '=', $record->created_by)->first();
 
@@ -347,5 +347,26 @@ class ShowPages extends Controller
         $user = User::select('phone')->where('username', '=', $record->created_by)->first();
 
         return view('pages.show', compact('record', 'user'));
+    }
+
+    public function showprofile () 
+    {
+        if(!Auth::check()) {
+            return redirect()->route('login.form')->with('error', 'Please login to access this page');
+        }
+
+        return view('pages.profile');
+    }
+
+    public function showallusers ()
+    {
+        if(!Auth::check()) {
+            return redirect()->route('login.form')->with('warning', 'Login to access user management page');
+        }
+        if(Auth::user()->role !== 'admin'){
+            return redirect()->back(403)->with('error', 'Only admins are allowed to visit the page');
+        }
+
+        return view('pages.user-management');
     }
 }

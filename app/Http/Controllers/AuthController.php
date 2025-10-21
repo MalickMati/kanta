@@ -47,6 +47,13 @@ class AuthController extends Controller
             ], 404);
         }
 
+        if($user->status !== 'active'){
+            return response()->json([
+                'success' => false,
+                'message' => 'Your status is deactivated by the admin!',
+            ]);
+        }
+
         $credentials = [
             'username' => $data['username'],
             'password' => $data['password'],

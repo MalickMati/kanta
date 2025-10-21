@@ -15,6 +15,7 @@ return new class extends Migration
             $table->enum('role', ['operator', 'admin'])->default('operator');
             $table->string('name');
             $table->string('phone');
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->softDeletes();
             $table->timestamps();
         });

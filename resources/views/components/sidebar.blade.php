@@ -353,6 +353,11 @@
                     <i class="svg-icon"><x-icons name="add-user" /></i>
                     <span class="nav-text">Add New User</span>
                 </a>
+                <a href="{{ route('all.users') }}"
+                    class="nav-item {{ request()->routeIs('all.users') ? 'active' : '' }}">
+                    <i class="svg-icon"><x-icons name="users" /></i>
+                    <span class="nav-text">All Users</span>
+                </a>
             @endif
         </div>
         @if (Auth::user()->role === 'admin')
