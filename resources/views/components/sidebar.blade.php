@@ -341,7 +341,7 @@
             @endif
         </div>
         <div class="nav-section">
-            <div class="nav-title">Profile</div>
+            <div class="nav-title">Users</div>
             <a href="{{ route('profile.page') }}"
                 class="nav-item {{ request()->routeIs('profile.page') ? 'active' : '' }}">
                 <i class="svg-icon"><x-icons name="profile" /></i>

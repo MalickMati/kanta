@@ -18,28 +18,32 @@ class ShowPages extends Controller
             return redirect()->route('login.form')->with('error', 'Login to access this page please');
         }
 
-        $today_weight = Detail::whereBetween('created_at', [
+        $today_weight = Detail::where('created_by', Auth::user()->username)->whereBetween('created_at', [
             Carbon::now()->startOfDay(),
             Carbon::now()->endOfDay(),
         ])->count();
-        $week_weight = Detail::whereBetween('created_at', [
+        $week_weight = Detail::where('created_by', Auth::user()->username)->whereBetween('created_at', [
             Carbon::now()->startOfWeek(),   // Monday by default
             Carbon::now()->endOfWeek()
         ])->count();
-        $month_weight = Detail::whereBetween('created_at', [
+        $month_weight = Detail::where('created_by', Auth::user()->username)->whereBetween('created_at', [
             Carbon::now()->startOfMonth(),
             Carbon::now()->endOfMonth(),
         ])->count();
-        $today_weight_by_user = Detail::where('created_by', Auth::user()->username)
-            ->whereBetween('created_at', [Carbon::now()->startOfDay(), Carbon::now()->endOfDay()])
-            ->count();
+
+        $amount_month = Detail::where('created_by', Auth::user()->username)
+            ->whereBetween('created_at', [
+                Carbon::now()->startOfMonth(),
+                Carbon::now()->endOfMonth(),
+            ])
+            ->sum('amount');
 
         $recent_weights = Detail::orderBy('created_at', 'desc')->take(5)->get();
         return view('pages.dashboard', [
             'today_weight' => $today_weight,
             'weekly_weight' => $week_weight,
             'monthly_weight' => $month_weight,
-            'today_user' => $today_weight_by_user,
+            'amount_month' => $amount_month,
             'recent' => $recent_weights
         ]);
     }
@@ -336,7 +340,7 @@ class ShowPages extends Controller
         return view('pages.edit');
     }
 
-    public function showrecorduser ($id) 
+    public function showrecorduser($id)
     {
         $record = Detail::where('id', '=', $id)->first();
 
@@ -349,21 +353,21 @@ class ShowPages extends Controller
         return view('pages.show', compact('record', 'user'));
     }
 
-    public function showprofile () 
+    public function showprofile()
     {
-        if(!Auth::check()) {
+        if (!Auth::check()) {
             return redirect()->route('login.form')->with('error', 'Please login to access this page');
         }
 
         return view('pages.profile');
     }
 
-    public function showallusers ()
+    public function showallusers()
     {
-        if(!Auth::check()) {
+        if (!Auth::check()) {
             return redirect()->route('login.form')->with('warning', 'Login to access user management page');
         }
-        if(Auth::user()->role !== 'admin'){
+        if (Auth::user()->role !== 'admin') {
             return redirect()->back(403)->with('error', 'Only admins are allowed to visit the page');
         }
 

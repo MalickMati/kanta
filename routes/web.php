@@ -6,9 +6,10 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\WeightPages;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('Auth.login');
-});
+// Route::get('/', function () {
+//     return view('Auth.login');
+// });
+Route::redirect('/', '/auth/login');
 
 Route::get('/weight', [WeightPages::class, 'get_weight'])->name('get.weight');
 

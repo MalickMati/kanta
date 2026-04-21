@@ -284,28 +284,28 @@
         <i class="svg-icon"><x-icons name="weight" /></i>
       </div>
       <div class="stat-info">
-        <h3>{{ $today_weight ?? '' }}</h3>
+        <h3>{{ $today_weight ?? '-' }}</h3>
         <p>Today's Weighings</p>
       </div>
     </div>
 
     <div class="card stat-card">
       <div class="stat-icon icon-2">
-        <i class="svg-icon"><x-icons name="calender"/></i>
+        <i class="svg-icon"><x-icons name="invoice"/></i>
       </div>
       <div class="stat-info">
-        <h3>{{ $weekly_weight ?? '' }}</h3>
+        <h3>{{ $weekly_weight ?? '-' }}</h3>
         <p>Weekly Weighings</p>
       </div>
     </div>
 
     <div class="card stat-card">
       <div class="stat-icon icon-3">
-        <i class="svg-icon"><x-icons name="invoice"/></i>
+        <i class="svg-icon"><x-icons name="calender"/></i>
       </div>
       <div class="stat-info">
-        <h3>{{ $today_user ?? '' }}</h3>
-        <p>Done By You (Today)</p>
+        <h3>{{ $monthly_weight ?? '-' }}</h3>
+        <p>Monthly Weighings</p>
       </div>
     </div>
 
@@ -314,8 +314,8 @@
         <i class="svg-icon"><x-icons name="chart-line"/></i>
       </div>
       <div class="stat-info">
-        <h3>{{ $monthly_weight ?? '' }}</h3>
-        <p>Total This Month</p>
+        <h3>{{ $amount_month ?? '-' }}</h3>
+        <p>Amount This Month</p>
       </div>
     </div>
 

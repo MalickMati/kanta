@@ -206,6 +206,11 @@ class WeightPages extends Controller
             return redirect()->route('login.form')->with('error', 'Session not found');
         }
 
+        $user = User::withTrashed()->where('username', '=', $request->input('username'))->first();
+        if ($user && $user->trashed()) {
+            $user->forceDelete();
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:25',
             'username' => 'required|string|unique:users,username',
