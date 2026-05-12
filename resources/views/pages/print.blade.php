@@ -593,14 +593,21 @@
         if (res.success) {
           showToast(res.message || 'Redirecting', 'success');
           if (res.redirect) {
-            setTimeout(() => {
-              const layout = localStorage.getItem('kanta_print_layout') || 'layout1';
-              const redirectUrl = new URL(res.redirect);
-              redirectUrl.searchParams.append('layout', layout);
-              location.href = redirectUrl.toString();
-              printBtn.disabled = false;
-              printBtn.classList.remove('loading');
-            }, 450);
+            if (typeof window.showSilentPrintModal === 'function') {
+              window.showSilentPrintModal(res.redirect).then(() => {
+                printBtn.disabled = false;
+                printBtn.classList.remove('loading');
+              });
+            } else {
+              setTimeout(() => {
+                const layout = 'layout4';
+                const redirectUrl = new URL(res.redirect);
+                redirectUrl.searchParams.append('layout', layout);
+                location.href = redirectUrl.toString();
+                printBtn.disabled = false;
+                printBtn.classList.remove('loading');
+              }, 450);
+            }
           }
         } else {
           showToast(res.message || 'Error', 'error');

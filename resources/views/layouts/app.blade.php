@@ -77,6 +77,48 @@
         padding-top: 5rem;
       }
     }
+
+    .print-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .print-modal-card {
+      width: 100%;
+      max-width: 400px;
+      margin: 1rem;
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .print-modal-card .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    .print-modal-card .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .print-modal-card .btn-primary { background: var(--accent); color: white; }
+    .print-modal-card .btn-secondary { background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border); }
+    .print-modal-card input { width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius); }
+    .print-modal-card label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
   </style>
   @yield('css')
 </head>
@@ -90,6 +132,97 @@
       @yield('main-content')
     </main>
   </div>
+
+  <!-- Silent Print Modal -->
+  <div id="silentPrintModal" class="print-modal-overlay" style="display: none;">
+    <div class="print-modal-card">
+      <h2 style="margin-bottom: 1rem; font-size: 1.25rem;">Print Confirmation</h2>
+      <div style="margin-bottom: 1rem;">
+        <label for="printCopies">How many copies do you want to print?</label>
+        <input type="number" id="printCopies" value="1" min="1" max="10">
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="cancelPrintBtn">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmPrintBtn">Print</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.showSilentPrintModal = function(redirectUrl) {
+      return new Promise((resolve) => {
+        const modal = document.getElementById('silentPrintModal');
+        const copiesInput = document.getElementById('printCopies');
+        const confirmBtn = document.getElementById('confirmPrintBtn');
+        const cancelBtn = document.getElementById('cancelPrintBtn');
+
+        modal.style.display = 'flex';
+        copiesInput.value = '1';
+        copiesInput.focus();
+
+        const handleConfirm = async () => {
+          const copies = parseInt(copiesInput.value) || 1;
+          cleanup();
+          
+          try {
+            // Force layout4 as per requirements
+            const finalUrl = new URL(redirectUrl);
+            finalUrl.searchParams.set('layout', 'layout4');
+            
+            if (typeof showToast === 'function') {
+                showToast('Fetching print layout...', 'success');
+            }
+            
+            const response = await fetch(finalUrl.toString());
+            const html = await response.text();
+            
+            if (typeof showToast === 'function') {
+                showToast('Sending to printer...', 'success');
+            }
+            
+            const printResponse = await fetch('http://localhost:3000/print', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ html, quantity: copies })
+            });
+            
+            const printResult = await printResponse.json();
+            
+            if (printResult.success) {
+              if (typeof showToast === 'function') showToast(printResult.message, 'success');
+            } else {
+              if (typeof showToast === 'function') showToast('Print failed: ' + printResult.error, 'error');
+            }
+          } catch (error) {
+            console.error(error);
+            if (typeof showToast === 'function') showToast('Could not connect to local printer service', 'error');
+          }
+          resolve(true);
+        };
+
+        const handleCancel = () => {
+          cleanup();
+          resolve(false);
+        };
+
+        const cleanup = () => {
+          modal.style.display = 'none';
+          confirmBtn.removeEventListener('click', handleConfirm);
+          cancelBtn.removeEventListener('click', handleCancel);
+        };
+
+        // Also allow Enter to confirm
+        const handleKeydown = (e) => {
+          if (e.key === 'Enter') handleConfirm();
+          if (e.key === 'Escape') handleCancel();
+        };
+
+        confirmBtn.addEventListener('click', handleConfirm);
+        cancelBtn.addEventListener('click', handleCancel);
+        copiesInput.addEventListener('keydown', handleKeydown);
+      });
+    };
+  </script>
 
   @yield('script')
 </body>

@@ -562,12 +562,16 @@
         if (res.success) {
           showToast(res.message, "success");
           if (res.redirect) {
-            setTimeout(() => {
-              const layout = localStorage.getItem('kanta_print_layout') || 'layout1';
-              const redirectUrl = new URL(res.redirect);
-              redirectUrl.searchParams.append('layout', layout);
-              location.href = redirectUrl.toString();
-            }, 450);
+            if (typeof window.showSilentPrintModal === 'function') {
+              window.showSilentPrintModal(res.redirect);
+            } else {
+              setTimeout(() => {
+                const layout = 'layout4';
+                const redirectUrl = new URL(res.redirect);
+                redirectUrl.searchParams.append('layout', layout);
+                location.href = redirectUrl.toString();
+              }, 450);
+            }
             secondWeightForm.reset();
           }
           let serial = second_serial.value;

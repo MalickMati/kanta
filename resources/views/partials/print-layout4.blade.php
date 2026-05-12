@@ -319,8 +319,6 @@
                         <input type="text" id="pftime" value="{{ date('H:i:s', strtotime($record->first_date)) }}" disabled>
                     </div>
                     <div class="inrow3">
-                        <input type="text" id="pveh" value="{{ $record->vehicle_number }}" disabled>
-                        <input type="text" id="psr" value="{{ $record->id }}" disabled>
                         <input type="text" id="psdate" value="{{ $record->second_date ? date('Y-m-d', strtotime($record->second_date)) : '' }}" disabled>
                         <input type="text" id="pstime" value="{{ $record->second_date ? date('H:i:s', strtotime($record->second_date)) : '' }}" disabled>
                     </div>
@@ -365,7 +363,7 @@
                     <p>Net Weight</p>
                 </div>
                 <!-- <div class="srow srow5">Received With Thanks</div> -->
-                <div class="srow srow6"><input type="text" value="{{ $record->amount }}" id="pamount" disabled></div>
+                <div class="srow srow6"><input type="text" value="Rs {{ $record->amount }} Paid" id="pamount" disabled></div>
             </div>
         </div>
     </div>
