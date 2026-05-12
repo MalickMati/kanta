@@ -98,7 +98,7 @@
             display: block;
             width: 100%;
             height: 421px;
-            margin-top:30px;
+            margin-top:60px;
             /* box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); */
         }
 
