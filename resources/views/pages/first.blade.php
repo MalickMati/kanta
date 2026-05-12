@@ -295,7 +295,13 @@
           <div class="form-group">
             <label for="description">Description</label>
             <input type="text" id="description" name="description" placeholder="Brief description (3-4 words)"
-              maxlength="25">
+              maxlength="25" list="description_auto">
+              <datalist id="description_auto">
+                <option value="Wheat">Wheat</option>
+                <option value="Rice">Rice</option>
+                <option value="Paddy">Paddy</option>
+                <option value="Toh">Toh</option>
+              </datalist>
           </div>
         </div>
 
@@ -381,7 +387,10 @@
           showToast(res.message, "success");
           if(res.redirect){
             setTimeout(() => {
-              location.href = res.redirect;
+              const layout = localStorage.getItem('kanta_print_layout') || 'layout1';
+              const redirectUrl = new URL(res.redirect);
+              redirectUrl.searchParams.append('layout', layout);
+              location.href = redirectUrl.toString();
             }, 450);
             firstWeightForm.reset();
           }

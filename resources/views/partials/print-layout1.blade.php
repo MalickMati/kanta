@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,7 +43,6 @@
             /* border: 1px solid #ddd; */
         }
 
-        /* Header */
         .header {
             text-align: center;
             margin-bottom: 15px;
@@ -63,7 +63,6 @@
             font-weight: normal;
         }
 
-        /* Main Content */
         .content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -287,15 +286,8 @@
             color: #27ae60;
         }
     </style>
-    <script>
-        window.onload = function(){
-            // For testing purposes - remove this in production
-            setTimeout(function() {
-                window.print();
-            }, 1000);
-        };
-    </script>
 </head>
+
 <body>
     <div class="invoice">
         <!-- Header -->
@@ -304,23 +296,21 @@
             <h2>USMAN RICE MILL HAFIZABAD ROAD, VANIKE TARAR</h2>
         </div>
 
-        <!-- Main Content -->
         <div class="content">
-            <!-- Left Side -->
             <div class="left-side">
                 <div class="customer-section">
                     <label for="pCustomer_Name">Customer Name:</label>
-                    <input id="pCustomer_Name" value="ALI TRADERS & COMPANY" disabled>
+                    <input id="pCustomer_Name" value="{{ $record->party }}" disabled>
                 </div>
 
                 <div class="vehicle-info">
                     <div class="info-group">
                         <label>Vehicle #:</label>
-                        <input type="text" value="ABC-123" disabled>
+                        <input type="text" value="{{ $record->vehicle_number }}" disabled>
                     </div>
                     <div class="info-group">
                         <label>Serial #:</label>
-                        <input type="text" value="45" disabled>
+                        <input type="text" value="{{ $record->id }}" disabled>
                     </div>
                 </div>
 
@@ -329,11 +319,11 @@
                         <p>First Weight</p>
                         <div class="time-input-group">
                             <label>Date:</label>
-                            <input type="text" value="15-12-2023" disabled>
+                            <input type="text" value="{{ date('Y-m-d', strtotime($record->first_date)) }}" disabled>
                         </div>
                         <div class="time-input-group">
                             <label>Time:</label>
-                            <input type="text" value="10:30 AM" disabled>
+                            <input type="text" value="{{ date('H:i:s', strtotime($record->first_date)) }}" disabled>
                         </div>
                     </div>
 
@@ -341,11 +331,11 @@
                         <p>Second Weight</p>
                         <div class="time-input-group">
                             <label>Date:</label>
-                            <input type="text" value="15-12-2023" disabled>
+                            <input type="text" value="{{ $record->second_date ? date('Y-m-d', strtotime($record->second_date)) : '' }}" disabled>
                         </div>
                         <div class="time-input-group">
                             <label>Time:</label>
-                            <input type="text" value="11:45 AM" disabled>
+                            <input type="text" value="{{ $record->second_date ? date('H:i:s', strtotime($record->second_date)) : '' }}" disabled>
                         </div>
                     </div>
                 </div>
@@ -353,44 +343,51 @@
                 <div class="description-section">
                     <p>Description & Mounds</p>
                     <div class="description-row">
-                        <input type="text" value="SUPER BASMATI RICE - 50KG BAGS" disabled>
+                        <input type="text" value="{{ $record->description }}" disabled>
                         <div class="mound-group">
                             <input type="text" value="40 Kg" disabled style="width: 50px;">
-                            <input type="text" value="176.75" disabled style="width: 70px;">
+                            <input type="text" value="{{ $record->net_weight / 40 ?? '' }}" disabled style="width: 70px;">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Side -->
             <div class="right-side">
                 <div class="operator-info">
-                    <p><b>Operator Number:</b> 0300-1234567</p>
-                    <p><b>Operator Name:</b> AHMED RAZA</p>
+                    <p><b>Operator Number:</b> {{ $user->phone }}</p>
+                    <p><b>Operator Name:</b> {{ Str::title($user->name) }}</p>
                 </div>
 
                 <div class="weights-section">
                     <div class="weight-row">
                         <p>1st Weight</p>
-                        <input type="text" value="15,420.50 KG" disabled>
+                        <input type="text" value="{{ $record->first_weight }} KG" disabled>
                     </div>
-                    
+
                     <div class="weight-row">
                         <p>2nd Weight</p>
-                        <input type="text" value="8,350.25 KG" disabled>
+                        <input type="text" value="{{ $record->second_weight  ? "$record->second_weight KG" : ''}}" disabled>
                     </div>
-                    
+
                     <div class="weight-row net-weight">
                         <p>Net Weight</p>
-                        <input type="text" value="7,070.25 KG" disabled>
+                        <input type="text" value="{{ $record->net_weight  ? "$record->net_weight KG" : ''}}" disabled>
                     </div>
                 </div>
 
                 <div class="amount-section">
-                    <input type="text" value="150 Rs. Received With Thanks" disabled>
+                    <input type="text" value="{{ $record->amount }} Rs. Received With Thanks" disabled>
                 </div>
             </div>
         </div>
     </div>
+
+@if(!isset($isPreview) || !$isPreview)
+    <script>
+        window.onload = function() { window.print(); }
+        window.addEventListener("afterprint", function() { window.history.back(); });
+    </script>
+@endif
 </body>
+
 </html>

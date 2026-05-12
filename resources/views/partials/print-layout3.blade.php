@@ -119,11 +119,6 @@
 
   .foot{ margin-top:4mm; font-size:8pt; color:#6a7380; text-align:center }
 </style>
-
-<script>
-  window.onload = function(){ window.print(); }
-  window.addEventListener("afterprint", () => { window.history.back(); });
-</script>
 </head>
 
 <body>
@@ -198,5 +193,12 @@
 
     <div class="amount"><div class="pill">{{ $record->amount }} Rs. Received With Thanks</div></div>
   </div>
+
+@if(!isset($isPreview) || !$isPreview)
+    <script>
+        window.onload = function() { window.print(); }
+        window.addEventListener("afterprint", function() { window.history.back(); });
+    </script>
+@endif
 </body>
 </html>

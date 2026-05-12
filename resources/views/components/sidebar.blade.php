@@ -362,7 +362,11 @@
         </div>
         @if (Auth::user()->role === 'admin')
             <div class="nav-section">
-                <div class="nav-title">Backup</div>
+                <div class="nav-title">Settings & Backup</div>
+                <a href="{{ route('settings.page') }}" class="nav-item {{ request()->routeIs('settings.page') ? 'active' : '' }}">
+                    <i class="svg-icon"><x-icons name="settings" /></i>
+                    <span class="nav-text">Settings</span>
+                </a>
                 <a href="{{ route('backup') }}" class="nav-item {{ request()->routeIs('backup') ? 'active' : '' }}">
                     <i class="svg-icon"><x-icons name="save" /></i>
                     <span class="nav-text">Create Backup</span>

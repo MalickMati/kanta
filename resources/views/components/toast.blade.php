@@ -211,9 +211,9 @@
 
     // If page loads while offline, inform immediately
     document.addEventListener("DOMContentLoaded", () => {
-      if (STATE.wasOffline) {
-        showToast("You are offline", "warning", 5000);
-      }
+      // if (STATE.wasOffline) {
+      //   showToast("You are offline", "warning", 5000);
+      // }
 
       @if(session('success'))
         showToast(@json(session('success')), 'success');

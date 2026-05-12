@@ -91,12 +91,100 @@ class ShowPages extends Controller
             return redirect()->route('print.record')->with('error', 'Please send the serial to that page');
         }
 
-        // $url = "https://kanta.malick.site/show/$record->id";
-        // $qrCode = QrCode::size(60)->generate($url);
+        $layoutKey = request()->query('layout', 'layout1');
+        
+        // Map layout key to blade file names
+        $layoutMap = [
+            'layout1' => 'partials.print-layout1',
+            'layout2' => 'partials.print-layout2',
+            'layout3' => 'partials.print-layout3',
+            'layout4' => 'partials.print-layout4',
+            'layout5' => 'partials.print-layout5',
+            'layout6' => 'partials.print-layout6',
+            'layout7' => 'partials.print-layout7',
+            'layout8' => 'partials.print-layout8',
+            'layout9' => 'partials.print-layout9',
+            'layout10' => 'partials.print-layout10',
+            'layout11' => 'partials.print-layout11',
+            'layout12' => 'partials.print-layout12',
+            'layout13' => 'partials.print-layout13',
+            'layout14' => 'partials.print-layout14',
+        ];
+        
+        $viewName = $layoutMap[$layoutKey] ?? 'partials.print-layout1';
+
+        $url = "https://kanta.malick.site/show/$record->id";
+        $qrCode = QrCode::size(60)->generate($url);
 
         $user = User::where('username', '=', $record->created_by)->first();
 
-        return view('pages.print-layout', compact('record', 'user'));
+        $isPreview = false;
+
+        return view($viewName, compact('record', 'user', 'qrCode', 'isPreview'));
+    }
+
+    public function showprintpreview()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login.form')->with('error', 'Not allowed to visit');
+        }
+
+        // Generate dummy data for the preview
+        $record = (object) [
+            'id' => 12345,
+            'party' => 'Demo Customer LLC',
+            'vehicle_number' => 'ABC-1234',
+            'first_date' => Carbon::now()->subHours(2),
+            'second_date' => Carbon::now(),
+            'first_weight' => 15000,
+            'second_weight' => 5000,
+            'net_weight' => 10000,
+            'description' => 'Rice Husk',
+            'amount' => 500,
+            'created_by' => 'demo_user'
+        ];
+
+        $user = (object) [
+            'name' => 'John Doe',
+            'phone' => '0300-1234567'
+        ];
+
+        $url = "https://kanta.malick.site/demo/12345";
+        $qrCode = QrCode::size(60)->generate($url);
+
+        $layoutKey = request()->query('layout', 'layout1');
+        
+        $layoutMap = [
+            'layout1' => 'partials.print-layout1',
+            'layout2' => 'partials.print-layout2',
+            'layout3' => 'partials.print-layout3',
+            'layout4' => 'partials.print-layout4',
+            'layout5' => 'partials.print-layout5',
+            'layout6' => 'partials.print-layout6',
+            'layout7' => 'partials.print-layout7',
+            'layout8' => 'partials.print-layout8',
+            'layout9' => 'partials.print-layout9',
+            'layout10' => 'partials.print-layout10',
+            'layout11' => 'partials.print-layout11',
+            'layout12' => 'partials.print-layout12',
+            'layout13' => 'partials.print-layout13',
+            'layout14' => 'partials.print-layout14',
+        ];
+        
+        $viewName = $layoutMap[$layoutKey] ?? 'partials.print-layout1';
+
+        $isPreview = true;
+
+        return view($viewName, compact('record', 'user', 'qrCode', 'isPreview'));
+    }
+
+    public function showSettings()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login.form')->with('error', 'Please login to access settings');
+        }
+
+        return view('pages.settings');
     }
 
     public function addnewuser()

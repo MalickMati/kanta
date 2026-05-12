@@ -131,5 +131,12 @@
       <div class="amount"><span class="pill">{{ $record->amount }} Rs. Received With Thanks</span></div>
     </div>
   </div>
+
+@if(!isset($isPreview) || !$isPreview)
+    <script>
+        window.onload = function() { window.print(); }
+        window.addEventListener("afterprint", function() { window.history.back(); });
+    </script>
+@endif
 </body>
 </html>

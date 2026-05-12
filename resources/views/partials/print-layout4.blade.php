@@ -1,4 +1,3 @@
-<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -294,11 +293,6 @@
             text-align: center;
         }
     </style>
-    <script>
-        window.onload = function () {
-            window.print();
-        };
-    </script>
 </head>
 
 <body>
@@ -309,7 +303,7 @@
             <div class="fside">
                 <div class="frow frow1">
                     <label for="pCustomer_Name">Customer Name:</label>
-                    <input id="pCustomer_Name" value="" disabled>
+                    <input id="pCustomer_Name" value="{{ $record->party }}" disabled>
                 </div>
                 <div class="frow frow2">
                     <div class="inrow1">
@@ -319,16 +313,16 @@
                         <p>Time</p>
                     </div>
                     <div class="inrow2">
-                        <input type="text" id="pveh" value="" disabled>
-                        <input type="text" id="psr" value="" disabled>
-                        <input type="text" id="pfdate" value="" disabled>
-                        <input type="text" id="pftime" value="" disabled>
+                        <input type="text" id="pveh" value="{{ $record->vehicle_number }}" disabled>
+                        <input type="text" id="psr" value="{{ $record->id }}" disabled>
+                        <input type="text" id="pfdate" value="{{ date('Y-m-d', strtotime($record->first_date)) }}" disabled>
+                        <input type="text" id="pftime" value="{{ date('H:i:s', strtotime($record->first_date)) }}" disabled>
                     </div>
                     <div class="inrow3">
-                        <input type="text" id="pveh" value="" disabled>
-                        <input type="text" id="psr" value="" disabled>
-                        <input type="text" id="psdate" value="" disabled>
-                        <input type="text" id="pstime" value="" disabled>
+                        <input type="text" id="pveh" value="{{ $record->vehicle_number }}" disabled>
+                        <input type="text" id="psr" value="{{ $record->id }}" disabled>
+                        <input type="text" id="psdate" value="{{ $record->second_date ? date('Y-m-d', strtotime($record->second_date)) : '' }}" disabled>
+                        <input type="text" id="pstime" value="{{ $record->second_date ? date('H:i:s', strtotime($record->second_date)) : '' }}" disabled>
                     </div>
                 </div>
                 <div class="frow frow3">
@@ -336,10 +330,10 @@
                     <p>Mounds</p>
                 </div>
                 <div class="frow frow4">
-                    <input type="text" id="pdiscip" disabled value="">
+                    <input type="text" id="pdiscip" disabled value="{{ $record->description }}">
                     <div style="display: inline-block;">
                         <input type="text" disabled value="40 Kg">
-                        <input type="text" id="pmounds" disabled value="">
+                        <input type="text" id="pmounds" disabled value="{{ $record->net_weight ? number_format($record->net_weight / 40, 1) : '' }}">
                     </div>
                 </div>
                 <!-- <div class="frow frow5">
@@ -359,22 +353,29 @@
                     </div>
                 </div>
                 <div class="srow srow2">
-                    <input type="text" disabled id="pfweight" value="">
+                    <input type="text" disabled id="pfweight" value="{{ $record->first_weight }}">
                     <p>1st Weight</p>
                 </div>
                 <div class="srow srow3">
-                    <input type="text" disabled id="psweight" value="">
+                    <input type="text" disabled id="psweight" value="{{ $record->second_weight }}">
                     <p>2nd Weight</p>
                 </div>
                 <div class="srow srow4">
-                    <input type="text" disabled id="pnetweight" value="">
+                    <input type="text" disabled id="pnetweight" value="{{ $record->net_weight }}">
                     <p>Net Weight</p>
                 </div>
                 <!-- <div class="srow srow5">Received With Thanks</div> -->
-                <div class="srow srow6"><input type="text" value="" id="pamount" disabled></div>
+                <div class="srow srow6"><input type="text" value="{{ $record->amount }}" id="pamount" disabled></div>
             </div>
         </div>
     </div>
+
+@if(!isset($isPreview) || !$isPreview)
+    <script>
+        window.onload = function() { window.print(); }
+        window.addEventListener("afterprint", function() { window.history.back(); });
+    </script>
+@endif
 </body>
 
 </html>

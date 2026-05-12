@@ -36,6 +36,9 @@ Route::get('/profile', [ShowPages::class, 'showprofile'])->name('profile.page');
 Route::put('/profile', [AuthController::class, 'update'])->name('profile.update');
 Route::put('/profile/password', [AuthController::class, 'updatePassword'])->name('profile.password.update');
 
+Route::get('/settings', [ShowPages::class, 'showSettings'])->name('settings.page');
+Route::get('/print-preview', [ShowPages::class, 'showprintpreview'])->name('print.preview');
+
 Route::get('/records', [ShowPages::class, 'recordsPage'])->name('records.page');
 Route::get('/records/periods', [ShowPages::class, 'periodOptions'])->name('records.periods');
 Route::get('/records/fetch',   [ShowPages::class, 'fetchRecords'])->name('records.fetch');
