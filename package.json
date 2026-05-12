@@ -4,7 +4,9 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "printer": "npm start --prefix printer_service",
+        "dev:all": "concurrently \"npm run dev\" \"npm run printer\""
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

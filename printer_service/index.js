@@ -8,6 +8,15 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Logging utility
+const logFilePath = path.join(__dirname, 'printer.log');
+const log = (message, type = 'INFO') => {
+    const timestamp = new Date().toISOString();
+    const logMessage = `[${timestamp}] [${type}] ${message}\n`;
+    console.log(logMessage.trim());
+    fs.appendFileSync(logFilePath, logMessage);
+};
+
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
@@ -15,6 +24,7 @@ app.post('/print', async (req, res) => {
     const { html, quantity } = req.body;
 
     if (!html) {
+        log('HTML content is missing in request', 'ERROR');
         return res.status(400).json({ error: 'HTML content is required.' });
     }
 
@@ -23,13 +33,23 @@ app.post('/print', async (req, res) => {
 
     let browser;
     try {
-        console.log(`Received print request for ${copies} copies.`);
+        log(`Received print request for ${copies} copies.`);
         
-        // Launch puppeteer
-        browser = await puppeteer.launch({
+        // Launch puppeteer - Use system chrome if available to avoid download issues
+        const executablePath = '/usr/bin/google-chrome';
+        const launchOptions = {
             headless: 'new',
             args: ['--no-sandbox', '--disable-setuid-sandbox']
-        });
+        };
+
+        if (fs.existsSync(executablePath)) {
+            launchOptions.executablePath = executablePath;
+            log(`Using system chrome at ${executablePath}`);
+        } else {
+            log('System chrome not found at /usr/bin/google-chrome, attempting default launch', 'WARNING');
+        }
+
+        browser = await puppeteer.launch(launchOptions);
         
         const page = await browser.newPage();
         
@@ -48,7 +68,7 @@ app.post('/print', async (req, res) => {
         });
 
         await browser.close();
-        console.log(`Generated PDF at ${tempPdfPath}`);
+        log(`Generated PDF at ${tempPdfPath}`);
 
         // Print using lp command (Linux)
         const command = `lp -n ${copies} "${tempPdfPath}"`;
@@ -59,19 +79,19 @@ app.post('/print', async (req, res) => {
             }
 
             if (error) {
-                console.error(`Error executing print command: ${error.message}`);
+                log(`Error executing print command: ${error.message}`, 'ERROR');
                 return res.status(500).json({ error: 'Failed to print', details: error.message });
             }
             if (stderr) {
-                console.error(`Print command stderr: ${stderr}`);
+                log(`Print command stderr: ${stderr}`, 'WARNING');
             }
 
-            console.log(`Print successful: ${stdout}`);
+            log(`Print successful: ${stdout.trim()}`);
             return res.status(200).json({ success: true, message: 'Print job sent successfully.' });
         });
 
     } catch (error) {
-        console.error('Error in /print:', error);
+        log(`Exception in /print: ${error.stack}`, 'ERROR');
         
         if (browser) {
             await browser.close();
@@ -86,6 +106,6 @@ app.post('/print', async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Printer Microservice is running on http://localhost:${port}`);
-    console.log('Ensure you have a default system printer configured (e.g. via CUPS on Linux).');
+    log(`Printer Microservice is running on http://localhost:${port}`);
+    log('Ensure you have a default system printer configured (e.g. via CUPS on Linux).');
 });
