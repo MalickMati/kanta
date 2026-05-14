@@ -321,6 +321,8 @@
                         <input type="text" id="pftime" value="{{ date('H:i:s', strtotime($record->first_date)) }}" disabled>
                     </div>
                     <div class="inrow3">
+                        <input type="text" id="pveh" value="-" disabled>
+                        <input type="text" id="psr" value="-" disabled>
                         <input type="text" id="psdate" value="{{ $record->second_date ? date('Y-m-d', strtotime($record->second_date)) : '' }}" disabled>
                         <input type="text" id="pstime" value="{{ $record->second_date ? date('H:i:s', strtotime($record->second_date)) : '' }}" disabled>
                     </div>
@@ -333,7 +335,8 @@
                     <input type="text" id="pdiscip" disabled value="{{ $record->description }}">
                     <div style="display: inline-block;">
                         <input type="text" disabled value="40 Kg">
-                        <input type="text" id="pmounds" disabled value="{{ $record->net_weight ? number_format($record->net_weight / 40, 1) : '' }}">
+                        <!-- <input type="text" id="pmounds" disabled value="{{ $record->net_weight ? number_format($record->net_weight / 40, 1) : '' }}"> -->
+                        <input type="text" id="pmounds" disabled value="{{ $record->net_weight ? floor($record->net_weight / 40) . ' - ' . ($record->net_weight % 40) : '' }}">
                     </div>
                 </div>
                 <!-- <div class="frow frow5">
