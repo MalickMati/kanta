@@ -323,6 +323,11 @@
                 <i class="svg-icon"><x-icons name="print" /></i>
                 <span class="nav-text">Print Record</span>
             </a>
+            <a href="{{ route('report.page') }}"
+                class="nav-item {{ request()->routeIs('report.page') ? 'active' : '' }}">
+                <i class="svg-icon"><x-icons name="records" /></i>
+                <span class="nav-text">Print Report</span>
+            </a>
             <a href="{{ route('records.page') }}"
                 class="nav-item {{ request()->routeIs('records.page') ? 'active' : '' }}">
                 <i class="svg-icon"><x-icons name="calender" /></i>

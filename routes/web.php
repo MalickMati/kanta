@@ -43,10 +43,16 @@ Route::get('/records', [ShowPages::class, 'recordsPage'])->name('records.page');
 Route::get('/records/periods', [ShowPages::class, 'periodOptions'])->name('records.periods');
 Route::get('/records/fetch',   [ShowPages::class, 'fetchRecords'])->name('records.fetch');
 
+Route::get('/reports', [ShowPages::class, 'reportPage'])->name('report.page');
+Route::get('/reports/fetch', [ShowPages::class, 'fetchReport'])->name('report.fetch');
+Route::get('/reports/print', [ShowPages::class, 'printReport'])->name('report.print');
+
 Route::post('/get/record', [WeightPages::class, 'fetchRecord'])->name('get.record');
 
 Route::get('/delete/record', [ShowPages::class, 'showdelete'])->name('delete.page');
 Route::post('/delete/record', [WeightPages::class, 'deleteRecord'])->name('delete.post');
+
+Route::get('/deleted-records-list', [ShowPages::class, 'showDeletedRecords'])->name('deleted.records.list');
 
 Route::get('/add/user', [ShowPages::class, 'addnewuser'])->name('add.new.user');
 Route::post('/add/user', [WeightPages::class, 'savenewuser'])->name('save.new.user');
@@ -55,5 +61,3 @@ Route::get('/users/fetch', [UserController::class, 'fetch'])->name('users.fetch'
 Route::patch('/users/{user}/toggle', [UserController::class, 'toggle'])->name('users.toggle');
 Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
 Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-
-Route::view('/test', 'partials.print-layout4');

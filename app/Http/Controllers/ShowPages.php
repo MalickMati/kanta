@@ -372,6 +372,103 @@ class ShowPages extends Controller
         ]);
     }
 
+    public function reportPage()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login.form')->with('error', 'Login to access this page');
+        }
+
+        return view('pages.report');
+    }
+
+    public function fetchReport(Request $request)
+    {
+        if (!Auth::check()) {
+            abort(403, 'Unauthorized');
+        }
+
+        $validated = $request->validate([
+            'filter_type' => 'required|in:date,serial',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date',
+            'from_serial' => 'nullable|integer',
+            'to_serial' => 'nullable|integer',
+        ]);
+
+        $query = Detail::query();
+
+        if ($validated['filter_type'] === 'date') {
+            if (!empty($validated['from_date'])) {
+                $to_date = !empty($validated['to_date']) ? $validated['to_date'] : \Carbon\Carbon::today()->toDateString();
+                $query->whereBetween(DB::raw('DATE(first_date)'), [$validated['from_date'], $to_date]);
+            }
+        } else {
+            if (!empty($validated['from_serial'])) {
+                if (!empty($validated['to_serial'])) {
+                    $query->whereBetween('id', [$validated['from_serial'], $validated['to_serial']]);
+                } else {
+                    $query->where('id', '>=', $validated['from_serial']);
+                }
+            }
+        }
+
+        $records = $query->select(
+            'id',
+            'party',
+            'first_weight',
+            'second_weight',
+            'net_weight',
+            'amount',
+            'first_date',
+            'second_date'
+        )->orderBy('id', 'asc')->get();
+
+        return response()->json([
+            'records' => $records
+        ]);
+    }
+
+    public function printReport(Request $request)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login.form')->with('error', 'Login to access this page');
+        }
+
+        $filter_type = $request->query('filter_type');
+        $query = Detail::query();
+
+        if ($filter_type === 'date') {
+            $from_date = $request->query('from_date');
+            $to_date = $request->query('to_date') ?: \Carbon\Carbon::today()->toDateString();
+            if ($from_date) {
+                $query->whereBetween(DB::raw('DATE(first_date)'), [$from_date, $to_date]);
+            }
+        } elseif ($filter_type === 'serial') {
+            $from_serial = $request->query('from_serial');
+            $to_serial = $request->query('to_serial');
+            if ($from_serial) {
+                if ($to_serial) {
+                    $query->whereBetween('id', [$from_serial, $to_serial]);
+                } else {
+                    $query->where('id', '>=', $from_serial);
+                }
+            }
+        }
+
+        $records = $query->select(
+            'id',
+            'party',
+            'first_weight',
+            'second_weight',
+            'net_weight',
+            'amount',
+            'first_date',
+            'second_date'
+        )->orderBy('id', 'asc')->get();
+
+        return view('partials.report-print', compact('records', 'filter_type'));
+    }
+
     private function authorizeAdmin()
     {
         if (!Auth::check()) {
@@ -460,5 +557,16 @@ class ShowPages extends Controller
         }
 
         return view('pages.user-management');
+    }
+
+    public function showDeletedRecords()
+    {
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            abort(403, 'Unauthorized access');
+        }
+
+        $records = Detail::onlyTrashed()->orderBy('deleted_at', 'desc')->get();
+
+        return view('pages.deleted-records', compact('records'));
     }
 }
