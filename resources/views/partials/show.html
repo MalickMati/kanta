@@ -1,233 +1,379 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Ticket Details — Al Hamad Computerized Kanta</title>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{
-    font-family:"Poppins",Arial,sans-serif;
-    background:#f1f5fa;
-    color:#0f141a;
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    padding:24px 12px;
-    min-height:100vh;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al Hammad Computerized Kanta | Vanike Tarar</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+        }
 
-  .ticket{
-    background:#fff;
-    border-radius:12px;
-    border:1.6px solid #e5ebf3;
-    box-shadow:0 8px 32px rgba(0,0,0,0.06);
-    width:100%;
-    max-width:700px;
-    padding:18px 20px 22px;
-    position:relative;
-    overflow:hidden;
-  }
+        #body {
+            font-family: "Poppins", monospace;
+            background: url(background.jpg) no-repeat;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100dvh;
+            width: 100%;
+            color: #fff;
+        }
 
-  .ticket::before{
-    content:"";
-    position:absolute; inset:0;
-    background:linear-gradient(135deg,#f7faff 0%,#f4fff9 100%);
-    opacity:.4;
-    pointer-events:none;
-  }
+        .container {
+            background-color: transparent;
+            backdrop-filter: blur(6px);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            margin-top: 30px;
+        }
 
-  .head{
-    position:relative;
-    z-index:1;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:10px;
-  }
+        .row {
+            width: 100%;
+            margin: 5px 5px;
+            display: flex;
+            flex: 1;
+            justify-content: space-between;
+        }
 
-  .brand h1{
-    font-size:1.1rem;
-    margin:0;
-    color:#0a73f0;
-    font-weight:800;
-  }
+        .row label {
+            width: 30%;
+        }
 
-  .brand p{
-    font-size:.8rem;
-    color:#43556a;
-    margin-top:2px;
-  }
+        .row5 button {
+            width: 30%;
+            background-color: transparent;
+            color: #fff;
+            outline: none;
+            border: none;
+            font-size: 16px;
+            text-align: left;
+        }
 
-  .serial{
-    font-weight:800;
-    font-size:.85rem;
-    color:#0a3a8f;
-    background:linear-gradient(90deg,#eef4ff,#f4fffb);
-    padding:4px 12px;
-    border-radius:999px;
-  }
+        .row input {
+            width: 60%;
+            outline: none;
+            border: none;
+            border-radius: 8px;
+            padding: 5px;
+        }
 
-  .divider{
-    height:3px;
-    border-radius:3px;
-    background:linear-gradient(90deg,#0a73f0,#16c1a6,transparent 70%);
-    margin:10px 0 14px;
-  }
+        .row5 p {
+            background-color: #fff;
+            border-radius: 8px;
+            width: 60%;
+            font-size: 12px;
+            font-weight: 500;
+            color: rgb(70, 69, 69);
+            padding: 5px;
+        }
 
-  .grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:18px;
-  }
+        .row8 {
+            display: flex;
+            justify-content: center;
+        }
 
-  table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:.9rem;
-  }
-  td{padding:3px 0}
-  .k{width:42%;color:#6a7380;font-weight:600;font-size:.85rem;}
-  .v{font-weight:700;color:#111;}
+        .row8 input {
+            width: 70%;
+            background-color: transparent;
+            outline: none;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            padding: 5px;
+            font-size: 18px;
+            transition: 0.7s;
+        }
 
-  .chips{
-    display:flex;
-    gap:6px;
-    flex-wrap:wrap;
-    margin-top:6px;
-  }
-  .chip{
-    padding:5px 10px;
-    border-radius:999px;
-    font-weight:700;
-    font-size:.8rem;
-    background:#f5faff;
-    color:#0a2a66;
-    border:1px solid #dce6f7;
-  }
+        .row8 input:hover {
+            background-color: #bd654a;
+        }
 
-  .weights{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
-    gap:10px;
-    margin-top:18px;
-  }
-  .card{
-    background:#fbfdff;
-    border:1px solid #e6edf6;
-    border-radius:10px;
-    padding:10px;
-    text-align:center;
-  }
-  .card label{
-    display:block;
-    font-size:.8rem;
-    font-weight:700;
-    color:#39465a;
-    margin-bottom:4px;
-  }
-  .card span{
-    display:block;
-    font-size:1.05rem;
-    font-weight:900;
-    color:#0d1b3a;
-  }
-  .card.net{
-    background:#fff7f5;
-    border-color:#ffe2dc;
-  }
-  .card.net span{color:#812018;}
+        #printing {
+            display: block;
+            width: 100%;
+            height: 421px;
+            margin-top:60px;
+            padding: 0 30px;
+            /* box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); */
+        }
 
-  .amount{
-    margin-top:22px;
-    text-align:center;
-  }
-  .pill{
-    display:inline-block;
-    background:#ecfff5;
-    color:#0e5a33;
-    border:1px solid #b8eacb;
-    padding:10px 20px;
-    border-radius:999px;
-    font-weight:900;
-    font-size:1rem;
-    box-shadow:0 0 2px rgba(0,0,0,0.05);
-  }
+        #printing h1 {
+            text-align: center;
+        }
 
-  .foot{
-    text-align:center;
-    font-size:.8rem;
-    color:#6a7380;
-    margin-top:18px;
-    border-top:1px dashed #d3dae3;
-    padding-top:8px;
-  }
+        #printing h2 {
+            text-align: center;
+        }
 
-  @media(max-width:600px){
-    .grid{grid-template-columns:1fr;}
-  }
-</style>
+        .fside {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            width: 60%;
+            height: 100%;
+        }
+
+        .sside {
+            width: 40%;
+            height: 100%;
+        }
+
+        .frow {
+            border: 1px solid black;
+            border-radius: 8px;
+            margin: 3px;
+            width: 97%;
+        }
+
+        .data {
+            display: flex;
+            flex: 1;
+            height: 80%;
+            text-align: center;
+            font-size: 18px;
+            font-family: serif;
+        }
+
+        .data input {
+            border: none;
+            outline: none;
+            background-color: transparent;
+            color: black;
+            font-family: serif;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .frow1 input {
+            width: 60%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+            text-align: left;
+        }
+
+        .frow1 label {
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .frow2 .inrow1 {
+            background-color: rgb(172, 172, 172);
+            border-radius: 7px 7px 0 0;
+        }
+
+        .frow2 .inrow1 p {
+            display: inline-block;
+            width: 24%;
+            padding: 10px;
+        }
+
+        .frow2 .inrow2 input {
+            display: inline-block;
+            width: 24%;
+            padding: 10px;
+            overflow-x: visible;
+        }
+
+        .frow2 .inrow3 input {
+            display: inline-block;
+            width: 24%;
+            padding: 10px;
+            overflow-x: visible;
+        }
+
+        .frow3 {
+            background-color: rgb(172, 172, 172);
+        }
+
+        .frow3 p {
+            width: 49%;
+            text-align: center;
+            display: inline-block;
+            padding: 10px;
+        }
+
+        .frow4 input {
+            width: 45%;
+            margin-left: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .frow4 div input {
+            width: 40%;
+        }
+
+        .frow4 div {
+            display: inline-block;
+            width: 47%;
+        }
+
+        .frow5 input {
+            width: 27%;
+            margin-left: 5px;
+            padding: 10px;
+            text-align: left;
+            font-size: 15px;
+        }
+
+        .frow5 p {
+            display: inline-block;
+            width: 20%;
+            font-weight: bold;
+            text-align: right;
+            font-size: 16px;
+        }
+
+        .srow {
+            border: 1px solid black;
+            border-radius: 8px;
+            padding: 8px;
+            margin: 5px;
+            display: flex;
+        }
+
+        .srow1 .inrow1 p {
+            width: 100%;
+        }
+
+        .srow1 .inrow2 p {
+            width: 100%;
+        }
+
+        .srow1 {
+            justify-content: center;
+            flex-direction: column;
+            height: 95px;
+        }
+
+        .srow2 input {
+            font-weight: bolder;
+            width: 60%;
+            text-align: center;
+        }
+
+        .srow2 p {
+            width: 40%;
+        }
+
+        .srow3 input {
+            font-weight: bolder;
+            width: 60%;
+            text-align: center;
+        }
+
+        .srow3 p {
+            width: 40%;
+        }
+
+        .srow4 input {
+            font-weight: bolder;
+            width: 60%;
+            text-align: center;
+        }
+
+        .srow4 p {
+            width: 40%;
+        }
+
+        .srow5 {
+            justify-content: center;
+        }
+
+        .srow6 {
+            justify-content: center;
+        }
+
+        .srow6 input {
+            text-align: center;
+        }
+    </style>
 </head>
+
 <body>
-  <div class="ticket">
-    <div class="head">
-      <div class="brand">
-        <h1>AL HAMAD COMPUTERIZED KANTA</h1>
-        <p>Usman Rice Mill Hafizabad Road, Vanike Tarar (0315-5568175)</p>
-      </div>
-      <div class="serial">Serial: 1023</div>
+    <div id="printing">
+        <h1>AL HAMD COMPUTERIZED KANTA</h1>
+        <h2>USMAN RICE MILL HAFIZABAD ROAD, VANIKE TARAR</h2>
+        <div class="data">
+            <div class="fside">
+                <div class="frow frow1">
+                    <label for="pCustomer_Name">Customer Name:</label>
+                    <input id="pCustomer_Name" value="Test" disabled>
+                </div>
+                <div class="frow frow2">
+                    <div class="inrow1">
+                        <p>Vehicle #</p>
+                        <p>Sr #</p>
+                        <p>Date</p>
+                        <p>Time</p>
+                    </div>
+                    <div class="inrow2">
+                        <input type="text" id="pveh" value="175 A" disabled>
+                        <input type="text" id="psr" value="123" disabled>
+                        <input type="text" id="pfdate" value="Date" disabled>
+                        <input type="text" id="pftime" value="Time" disabled>
+                    </div>
+                    <div class="inrow3">
+                        <input type="text" id="pveh" value="-" disabled>
+                        <input type="text" id="psr" value="-" disabled>
+                        <input type="text" id="psdate" value="Date" disabled>
+                        <input type="text" id="pstime" value="Time" disabled>
+                    </div>
+                </div>
+                <div class="frow frow3">
+                    <p>Discription</p>
+                    <p>Mounds</p>
+                </div>
+                <div class="frow frow4">
+                    <input type="text" id="pdiscip" disabled value="Wheat">
+                    <div style="display: inline-block;">
+                        <input type="text" disabled value="40 Kg">
+                        <!-- <input type="text" id="pmounds" disabled value="{{ $record->net_weight ? number_format($record->net_weight / 40, 1) : '' }}"> -->
+                        <input type="text" id="pmounds" disabled value="10-0">
+                    </div>
+                </div>
+                <!-- <div class="frow frow5">
+                    <p>1st Time:</p>
+                    <input type="text" disabled value="Without Driver" id="pft">
+                    <p>2nd Time:</p>
+                    <input type="text" disabled value="Without Driver" id="pst">
+                </div> -->
+            </div>
+            <div class="sside">
+                <div class="srow srow1">
+                    <div class="inrow1">
+
+                    </div>
+                    <div class="inrow2">
+
+                    </div>
+                </div>
+                <div class="srow srow2">
+                    <input type="text" disabled id="pfweight" value="200 KG">
+                    <p>1st Weight</p>
+                </div>
+                <div class="srow srow3">
+                    <input type="text" disabled id="psweight" value="600 KG">
+                    <p>2nd Weight</p>
+                </div>
+                <div class="srow srow4">
+                    <input type="text" disabled id="pnetweight" value="400 KG">
+                    <p>Net Weight</p>
+                </div>
+                <!-- <div class="srow srow5">Received With Thanks</div> -->
+                <div class="srow srow6"><input type="text" value="Rs 100 Paid" id="pamount" disabled></div>
+            </div>
+        </div>
     </div>
 
-    <div class="divider"></div>
-
-    <div class="grid">
-      <table>
-        <tr><td class="k">Customer</td><td class="v">Muhammad Farhan</td></tr>
-        <tr><td class="k">Vehicle #</td><td class="v">LEH-3245</td></tr>
-        <tr><td class="k">Operator #</td><td class="v">0312-4567890</td></tr>
-      </table>
-
-      <table>
-        <tr><td class="k">1st Date</td><td class="v">2025-10-18</td></tr>
-        <tr><td class="k">1st Time</td><td class="v">09:32:45</td></tr>
-        <tr><td class="k">2nd Date</td><td class="v">2025-10-18</td></tr>
-        <tr><td class="k">2nd Time</td><td class="v">10:10:22</td></tr>
-      </table>
-    </div>
-
-    <div class="divider" style="margin:14px 0 10px;"></div>
-
-    <table>
-      <tr><td class="k">Material</td><td class="v">Rice Husk</td></tr>
-    </table>
-    <div class="chips">
-      <div class="chip">Unit 40 Kg</div>
-      <div class="chip">Mound: 115.0</div>
-    </div>
-
-    <div class="weights">
-      <div class="card">
-        <label>1st Weight</label>
-        <span>15,200 KG</span>
-      </div>
-      <div class="card">
-        <label>2nd Weight</label>
-        <span>10,600 KG</span>
-      </div>
-      <div class="card net">
-        <label>Net Weight</label>
-        <span>4,600 KG</span>
-      </div>
-    </div>
-
-    <div class="amount">
-      <div class="pill">9,200 Rs. Received With Thanks</div>
-    </div>
-
-    <div class="foot">
-      Verified by system — Thank you for visiting Al Hamad Computerized Kanta.
-    </div>
-  </div>
 </body>
+
 </html>

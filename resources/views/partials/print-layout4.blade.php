@@ -99,6 +99,7 @@
             width: 100%;
             height: 421px;
             margin-top:60px;
+            padding: 0 30px;
             /* box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); */
         }
 
