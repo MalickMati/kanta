@@ -174,6 +174,13 @@ class WeightPages extends Controller
             ]);
         }
 
+        if($record->second_weight != 0 || $record->second_weight != NULL) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Second Weight Already Saved!',
+            ]);
+        }
+
         $record->second_weight = $data['secondWeight'];
         $record->description = Str::title($data['Description']);
 
