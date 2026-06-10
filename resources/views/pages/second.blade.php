@@ -525,6 +525,10 @@
         second_serial.value = record.id;
         secondWeightInput.value = record.second_weight;
 
+        if(secondWeightInput.value != '' || secondWeightInput.value != 0) {
+          secondWeightInput.disabled = true;
+        }
+
         // Focus on second weight input
         secondWeightInput.focus();
       }

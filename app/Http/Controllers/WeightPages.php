@@ -150,7 +150,7 @@ class WeightPages extends Controller
 
         $validator = Validator::make($request->all(), [
             'serial' => 'required|string|exists:details,id',
-            'secondWeight' => 'required|string|max:15',
+            'secondWeight' => 'required|numeric|min:1|max:99999999999999',
             'Description' => 'nullable|string|max:25',
         ], [
             'serial.exists' => 'No first record was found',
@@ -174,7 +174,7 @@ class WeightPages extends Controller
             ]);
         }
 
-        if($record->second_weight != 0 || $record->second_weight != NULL) {
+        if($record->second_weight > 0) {
             return response()->json([
                 'success' => false,
                 'message' => 'Second Weight Already Saved!',
