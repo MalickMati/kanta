@@ -142,6 +142,9 @@
         <input type="number" id="printCopies" value="1" min="1" max="10">
       </div>
       <div class="form-actions">
+        @if (Auth::user()->role == 'admin')
+          <button type="button" class="btn btn-secondary" id="savePdfBtn" style="background: var(--success); color: white; margin-right: auto;">Save as PDF</button>
+        @endif
         <button type="button" class="btn btn-secondary" id="cancelPrintBtn">Cancel</button>
         <button type="button" class="btn btn-primary" id="confirmPrintBtn">Print</button>
       </div>
@@ -155,6 +158,7 @@
         const copiesInput = document.getElementById('printCopies');
         const confirmBtn = document.getElementById('confirmPrintBtn');
         const cancelBtn = document.getElementById('cancelPrintBtn');
+        const savePdfBtn = document.getElementById('savePdfBtn');
 
         modal.style.display = 'flex';
         copiesInput.value = '1';
@@ -205,10 +209,22 @@
           resolve(false);
         };
 
+        const handleSavePdf = () => {
+          cleanup();
+          const finalUrl = new URL(redirectUrl);
+          finalUrl.searchParams.set('layout', 'layout4');
+          const printWindow = window.open(finalUrl.toString(), '_blank');
+          if (!printWindow && typeof showToast === 'function') {
+            showToast('Please allow popups to save as PDF', 'error');
+          }
+          resolve(true);
+        };
+
         const cleanup = () => {
           modal.style.display = 'none';
           confirmBtn.removeEventListener('click', handleConfirm);
           cancelBtn.removeEventListener('click', handleCancel);
+          savePdfBtn.removeEventListener('click', handleSavePdf);
         };
 
         // Also allow Enter to confirm
@@ -219,6 +235,7 @@
 
         confirmBtn.addEventListener('click', handleConfirm);
         cancelBtn.addEventListener('click', handleCancel);
+        savePdfBtn.addEventListener('click', handleSavePdf);
         copiesInput.addEventListener('keydown', handleKeydown);
       });
     };

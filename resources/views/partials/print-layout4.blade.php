@@ -319,13 +319,13 @@
                         <input type="text" id="pveh" value="{{ $record->vehicle_number }}" disabled>
                         <input type="text" id="psr" value="{{ $record->id }}" disabled>
                         <input type="text" id="pfdate" value="{{ date('Y-m-d', strtotime($record->first_date)) }}" disabled>
-                        <input type="text" id="pftime" value="{{ date('H:i:s', strtotime($record->first_date)) }}" disabled>
+                        <input type="text" id="pftime" value="{{ date('h:i A', strtotime($record->first_date)) }}" disabled>
                     </div>
                     <div class="inrow3">
                         <input type="text" id="pveh" value="-" disabled>
                         <input type="text" id="psr" value="-" disabled>
                         <input type="text" id="psdate" value="{{ $record->second_date ? date('Y-m-d', strtotime($record->second_date)) : '' }}" disabled>
-                        <input type="text" id="pstime" value="{{ $record->second_date ? date('H:i:s', strtotime($record->second_date)) : '' }}" disabled>
+                        <input type="text" id="pstime" value="{{ $record->second_date ? date('h:i A', strtotime($record->second_date)) : '' }}" disabled>
                     </div>
                 </div>
                 <div class="frow frow3">

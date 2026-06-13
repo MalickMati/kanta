@@ -525,12 +525,20 @@
         second_serial.value = record.id;
         secondWeightInput.value = record.second_weight;
 
-        if(secondWeightInput.value != '' || secondWeightInput.value != 0) {
-          secondWeightInput.disabled = true;
+        if(record.second_weight && record.second_weight > 0) {
+          secondWeightInput.readOnly = true;
+          getWeightBtn.disabled = true;
+          sub_btn.disabled = true;
+          Description.readOnly = true;
+        } else {
+          secondWeightInput.readOnly = false;
+          getWeightBtn.disabled = false;
+          sub_btn.disabled = false;
+          Description.readOnly = false;
+          
+          // Focus on second weight input
+          secondWeightInput.focus();
         }
-
-        // Focus on second weight input
-        secondWeightInput.focus();
       }
 
       // Get weight from serial port simulation
