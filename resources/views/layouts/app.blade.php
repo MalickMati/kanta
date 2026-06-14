@@ -224,7 +224,7 @@
           modal.style.display = 'none';
           confirmBtn.removeEventListener('click', handleConfirm);
           cancelBtn.removeEventListener('click', handleCancel);
-          savePdfBtn.removeEventListener('click', handleSavePdf);
+          if (savePdfBtn) savePdfBtn.removeEventListener('click', handleSavePdf);
         };
 
         // Also allow Enter to confirm
@@ -235,7 +235,7 @@
 
         confirmBtn.addEventListener('click', handleConfirm);
         cancelBtn.addEventListener('click', handleCancel);
-        savePdfBtn.addEventListener('click', handleSavePdf);
+        if (savePdfBtn) savePdfBtn.addEventListener('click', handleSavePdf);
         copiesInput.addEventListener('keydown', handleKeydown);
       });
     };
