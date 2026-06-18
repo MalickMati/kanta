@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SyncRecordToRemote;
 use App\Models\Detail;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
@@ -304,6 +302,8 @@ class WeightPages extends Controller
             'party' => 'required|string|max:20',
             'first_weight' => 'required|string|max:15',
             'second_weight' => 'required|string|max:15',
+            'first_time' => 'required|string|max:19',
+            'second_time' => 'required|string|max:19',
             'amount' => 'required|string|max:5',
             'description' => 'nullable|string|max:25',
         ]);
@@ -331,6 +331,8 @@ class WeightPages extends Controller
             'party' => Str::title($data['party']),
             'first_weight' => $data['first_weight'],
             'second_weight' => $data['second_weight'],
+            'first_date' => $data['first_time'],
+            'second_date' => $data['second_time'],
             'amount' => $data['amount'],
             'description' => Str::title($data['description']),
         ]);
