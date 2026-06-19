@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Detail extends Model
 {
     use SoftDeletes;
+
     protected $fillable = [
         'vehicle_number',
         'party',

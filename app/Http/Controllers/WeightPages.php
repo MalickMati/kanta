@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Detail;
 use App\Models\User;
+use App\Models\Metadata;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -80,10 +81,22 @@ class WeightPages extends Controller
             ]);
         }
 
+        $address = Metadata::where('name', 'Address')->first();
+
+        Log::info($address);
+
+        if(!$address) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Address Not Found',
+            ]);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Record found!',
             'record' => $record,
+            'address' => $address,
         ]);
     }
 

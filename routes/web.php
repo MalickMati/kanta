@@ -61,3 +61,5 @@ Route::get('/users/fetch', [UserController::class, 'fetch'])->name('users.fetch'
 Route::patch('/users/{user}/toggle', [UserController::class, 'toggle'])->name('users.toggle');
 Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
 Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+Route::post('/address/update', [ShowPages::class, 'addressupdate'])->name('address.update');

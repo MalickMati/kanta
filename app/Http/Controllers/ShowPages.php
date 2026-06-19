@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Detail;
+use App\Models\Metadata;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\Validator;
 
 class ShowPages extends Controller
 {
@@ -92,7 +95,7 @@ class ShowPages extends Controller
         }
 
         $layoutKey = request()->query('layout', 'layout1');
-        
+
         // Map layout key to blade file names
         $layoutMap = [
             'layout1' => 'partials.print-layout1',
@@ -110,7 +113,7 @@ class ShowPages extends Controller
             'layout13' => 'partials.print-layout13',
             'layout14' => 'partials.print-layout14',
         ];
-        
+
         $viewName = $layoutMap[$layoutKey] ?? 'partials.print-layout1';
 
         $url = "https://kanta.malick.site/show/$record->id";
@@ -120,7 +123,18 @@ class ShowPages extends Controller
 
         $isPreview = false;
 
-        return view($viewName, compact('record', 'user', 'qrCode', 'isPreview'));
+        $address = Metadata::where('name', 'Address')->first();
+
+        Log::info($address);
+
+        if (!$address) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Address Not Found',
+            ]);
+        }
+
+        return view($viewName, compact('record', 'user', 'qrCode', 'isPreview', 'address'));
     }
 
     public function showprintpreview()
@@ -153,7 +167,7 @@ class ShowPages extends Controller
         $qrCode = QrCode::size(60)->generate($url);
 
         $layoutKey = request()->query('layout', 'layout1');
-        
+
         $layoutMap = [
             'layout1' => 'partials.print-layout1',
             'layout2' => 'partials.print-layout2',
@@ -170,7 +184,7 @@ class ShowPages extends Controller
             'layout13' => 'partials.print-layout13',
             'layout14' => 'partials.print-layout14',
         ];
-        
+
         $viewName = $layoutMap[$layoutKey] ?? 'partials.print-layout1';
 
         $isPreview = true;
@@ -184,7 +198,9 @@ class ShowPages extends Controller
             return redirect()->route('login.form')->with('error', 'Please login to access settings');
         }
 
-        return view('pages.settings');
+        $address = Metadata::where('name', '=', 'address')->firstOrFail();
+
+        return view('pages.settings', compact('address'));
     }
 
     public function addnewuser()
@@ -568,5 +584,58 @@ class ShowPages extends Controller
         $records = Detail::onlyTrashed()->orderBy('deleted_at', 'desc')->get();
 
         return view('pages.deleted-records', compact('records'));
+    }
+
+    public function addressupdate(Request $request)
+    {
+        if (!Auth::check() || Auth::user()->role != 'admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not logged in or not admin!',
+            ]);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'address' => 'required|min:20|max:50|string',
+        ], [
+            'address.required' => 'Address bar should be filled!',
+            'address.min' => 'Address should be atleast 20 characters long',
+            'address.max' => 'Address should not be longer than 50 characters',
+            'address.string' => 'Address should be string (TEXT)',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ]);
+        }
+
+        $record = Metadata::where('name', 'address')->firstOrFail();
+
+        if (!$record) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No address was found to be updated',
+            ]);
+        }
+
+        $user = Auth::user();
+
+        $record->value = $request->input('address');
+
+        if ($record->save()) {
+            Log::info("Address was updated to $record->value by $user->username");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Address updated successfully',
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to save Address',
+            ]);
+        }
     }
 }

@@ -98,7 +98,7 @@
             display: block;
             width: 100%;
             height: 421px;
-            margin-top:60px;
+            margin-top: 60px;
             padding: 0 30px;
             /* box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); */
         }
@@ -301,7 +301,7 @@
 <body>
     <div id="printing">
         <h1>AL HAMD COMPUTERIZED KANTA</h1>
-        <h2>USMAN RICE MILL HAFIZABAD ROAD, VANIKE TARAR</h2>
+        <h2>{{ $address->value }}</h2>
         <div class="data">
             <div class="fside">
                 <div class="frow frow1">
@@ -318,14 +318,20 @@
                     <div class="inrow2">
                         <input type="text" id="pveh" value="{{ $record->vehicle_number }}" disabled>
                         <input type="text" id="psr" value="{{ $record->id }}" disabled>
-                        <input type="text" id="pfdate" value="{{ date('Y-m-d', strtotime($record->first_date)) }}" disabled>
-                        <input type="text" id="pftime" value="{{ date('h:i A', strtotime($record->first_date)) }}" disabled>
+                        <input type="text" id="pfdate" value="{{ date('Y-m-d', strtotime($record->first_date)) }}"
+                            disabled>
+                        <input type="text" id="pftime" value="{{ date('h:i A', strtotime($record->first_date)) }}"
+                            disabled>
                     </div>
                     <div class="inrow3">
                         <input type="text" id="pveh" value="-" disabled>
                         <input type="text" id="psr" value="-" disabled>
-                        <input type="text" id="psdate" value="{{ $record->second_date ? date('Y-m-d', strtotime($record->second_date)) : '' }}" disabled>
-                        <input type="text" id="pstime" value="{{ $record->second_date ? date('h:i A', strtotime($record->second_date)) : '' }}" disabled>
+                        <input type="text" id="psdate"
+                            value="{{ $record->second_date ? date('Y-m-d', strtotime($record->second_date)) : '' }}"
+                            disabled>
+                        <input type="text" id="pstime"
+                            value="{{ $record->second_date ? date('h:i A', strtotime($record->second_date)) : '' }}"
+                            disabled>
                     </div>
                 </div>
                 <div class="frow frow3">
@@ -337,7 +343,8 @@
                     <div style="display: inline-block;">
                         <input type="text" disabled value="40 Kg">
                         <!-- <input type="text" id="pmounds" disabled value="{{ $record->net_weight ? number_format($record->net_weight / 40, 1) : '' }}"> -->
-                        <input type="text" id="pmounds" disabled value="{{ $record->net_weight ? floor($record->net_weight / 40) . ' - ' . ($record->net_weight % 40) : '' }}">
+                        <input type="text" id="pmounds" disabled
+                            value="{{ $record->net_weight ? floor($record->net_weight / 40) . ' - ' . ($record->net_weight % 40) : '' }}">
                     </div>
                 </div>
                 <!-- <div class="frow frow5">
@@ -369,17 +376,18 @@
                     <p>Net Weight</p>
                 </div>
                 <!-- <div class="srow srow5">Received With Thanks</div> -->
-                <div class="srow srow6"><input type="text" value="Rs {{ $record->amount }} Paid" id="pamount" disabled></div>
+                <div class="srow srow6"><input type="text" value="Rs {{ $record->amount }} Paid" id="pamount" disabled>
+                </div>
             </div>
         </div>
     </div>
 
-@if(!isset($isPreview) || !$isPreview)
-    <script>
-        window.onload = function() { window.print(); }
-        window.addEventListener("afterprint", function() { window.history.back(); });
-    </script>
-@endif
+    @if(!isset($isPreview) || !$isPreview)
+        <script>
+            window.onload = function () { window.print(); }
+            window.addEventListener("afterprint", function () { window.history.back(); });
+        </script>
+    @endif
 </body>
 
 </html>
