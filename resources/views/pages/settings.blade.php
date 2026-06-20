@@ -369,6 +369,23 @@
 
     <div class="card" style="margin-top: 1.5rem;">
 
+        <form id="companynameform" class="form" novalidate autocomplete="off">
+            @csrf
+            <div class="form-grid">
+                <div class="form-row">
+                    <label for="companyname">Company Name</label>
+                    <input id="companyname" name="companyname" type="text" value="{{ $company->value }}" required>
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" type="submit" id="companysavebtn">Update Name</button>
+                </div>
+        </form>
+
+    </div>
+
+    <div style="margin-top: 1.5rem;">
+
         <form id="addressform" class="form" novalidate autocomplete="off">
             @csrf
             <div class="form-grid">
@@ -378,7 +395,24 @@
                 </div>
 
                 <div class="actions">
-                    <button class="btn btn-primary" type="submit" id="savebtn">Save changes</button>
+                    <button class="btn btn-primary" type="submit" id="savebtn">Update Address</button>
+                </div>
+        </form>
+
+    </div>
+
+    <div style="margin-top: 1.5rem;">
+
+        <form id="contactnumform" class="form" novalidate autocomplete="off">
+            @csrf
+            <div class="form-grid">
+                <div class="form-row">
+                    <label for="contactnum">Contact Number</label>
+                    <input id="contactnum" name="contactnum" type="tel" value="{{ $contact->value ?? 'Not Found' }}" required>
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" type="submit" id="contactnumbtn">Update Contact</button>
                 </div>
         </form>
 
@@ -388,13 +422,43 @@
 
 @section('script')
     <script>
-        const form = document.getElementById('addressform');
-        const btn = document.getElementById('savebtn');
+        const addressform = document.getElementById('addressform');
+        const addressbtn = document.getElementById('savebtn');
 
-        form.addEventListener('submit', async (e) => {
+        const companynameform = document.getElementById('companynameform');
+        const companynamebtn = document.getElementById('companysavebtn');
+
+        const contactnumform = document.getElementById('contactnumform');
+        const contactnumbtn = document.getElementById('contactnumbtn');
+
+        companynameform.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            btn.disabled = true;
+            companynamebtn.disabled = true;
+
+            try {
+                const formData = new FormData();
+
+                formData.append('companyname', document.getElementById('companyname').value);
+
+                const res = await ajaxRequest('{{ route('company.name.update') }}', 'POST', formData);
+
+                if (res.success) {
+                    showToast(res.message, "success");
+                } else {
+                    showToast(res.message, "warning");
+                }
+            } catch (err) {
+                showToast('Network error. Please try again.', 'error', 3000);
+            } finally {
+                companynamebtn.disabled = false;
+            }
+        });
+
+        addressform.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            addressbtn.disabled = true;
 
             try {
                 const formData = new FormData();
@@ -411,7 +475,31 @@
             } catch (err) {
                 showToast('Network error. Please try again.', 'error', 3000);
             } finally {
-                btn.disabled = false;
+                addressbtn.disabled = false;
+            }
+        });
+
+        contactnumform.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            contactnumbtn.disabled = true;
+
+            try {
+                const formData = new FormData();
+
+                formData.append('contact', document.getElementById('contactnum').value);
+
+                const res = await ajaxRequest('{{ route('contact.number.update') }}', 'POST', formData);
+
+                if (res.success) {
+                    showToast(res.message, "success");
+                } else {
+                    showToast(res.message, "warning");
+                }
+            } catch (err) {
+                showToast('Network error. Please try again.', 'error', 3000);
+            } finally {
+                contactnumbtn.disabled = false;
             }
         });
     </script>

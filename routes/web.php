@@ -63,3 +63,5 @@ Route::put('/users/{user}', [UserController::class, 'update'])->name('users.upda
 Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
 Route::post('/address/update', [ShowPages::class, 'addressupdate'])->name('address.update');
+Route::post('/companyname/update', [ShowPages::class, 'companynameupdate'])->name('company.name.update');
+Route::post('/contact/update', [ShowPages::class, 'contactnumupdate'])->name('contact.number.update');

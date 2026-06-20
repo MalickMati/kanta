@@ -125,16 +125,19 @@ class ShowPages extends Controller
 
         $address = Metadata::where('name', 'Address')->first();
 
-        Log::info($address);
-
-        if (!$address) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Address Not Found',
-            ]);
+        if(!$address) {
+            return redirect()->back()->with('error', 'Address not found!');
         }
 
-        return view($viewName, compact('record', 'user', 'qrCode', 'isPreview', 'address'));
+        $company = Metadata::where('name', 'Company_Name')->first();
+
+        if(!$company) {
+            return redirect()->back()->with('error', 'Company Name not found!');
+        }
+
+        $contact = Metadata::where('name', '=', 'Contact_Number')->first();
+
+        return view($viewName, compact('record', 'user', 'qrCode', 'isPreview', 'address', 'company', 'contact'));
     }
 
     public function showprintpreview()
@@ -199,8 +202,10 @@ class ShowPages extends Controller
         }
 
         $address = Metadata::where('name', '=', 'address')->firstOrFail();
+        $company = Metadata::where('name', '=', 'Company_Name')->firstOrFail();
+        $contact = Metadata::where('name', '=', 'Contact_Number')->first();
 
-        return view('pages.settings', compact('address'));
+        return view('pages.settings', compact('address', 'company', 'contact'));
     }
 
     public function addnewuser()
@@ -636,6 +641,108 @@ class ShowPages extends Controller
                 'success' => false,
                 'message' => 'Unable to save Address',
             ]);
+        }
+    }
+
+    public function companynameupdate(Request $request)
+    {
+        if(!Auth::check() || Auth::user()->role != 'admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not logged in or you do not have permission to update!',
+            ], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'companyname' => 'required|string|max:40|min:20',
+        ], [
+            'companyname.required' => 'Name is required!',
+            'companyname.string' => 'It is not a valid string',
+            'companyname.max' => 'Max 40 characters are allowed',
+            'companyname.min' => 'Minimum 20 characters are required',
+        ]);
+
+        if($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ]);
+        }
+
+        $record = Metadata::where('name', 'Company_Name')->first();
+
+        if(!$record) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Company Name was not found!',
+            ]);
+        }
+
+        $record->value = $request->input('companyname');
+
+        $user = Auth::user();
+
+        if($record->save()) {
+            Log::info("Company Name was updated to $record->value by $user->username");
+            return response()->json([
+                'success' => true,
+                'message' => 'Company Name was updated successfully',
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => "Unable to update the company name!",
+            ]);
+        }
+
+    }
+
+    public function contactnumupdate(Request $request)
+    {
+        if(!Auth::check() || Auth::user()->role != 'admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not allowed to perform this operation!'
+            ], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'contact' => 'required|numeric',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ]);
+        }
+
+        $record = Metadata::where('name', '=', 'Contact_Number')->first();
+
+        if(!$record) {
+            Metadata::create([
+                'name' => 'Contact_Number',
+                'value' => $request->input('contact'),
+            ]);
+
+            return response()-> json([
+                'success' => true,
+                'message' => 'No record was found so created a new record!',
+            ]);
+        } else {
+            $record->value = $request->input('contact');
+
+            if($record->save()){
+                return response()->json([
+                    'success' => true,
+                    'message' => "Contact Number Updated Successfully",
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unable to save Contact number!',
+                ]);
+            }
         }
     }
 }

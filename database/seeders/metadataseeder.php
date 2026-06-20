@@ -19,6 +19,12 @@ class metadataseeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        DB::table('metadatas')->insert([
+            'name' => 'Company_Name',
+            'value' => 'AL HAMD COMPUTERIZED KANTA',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 }
 

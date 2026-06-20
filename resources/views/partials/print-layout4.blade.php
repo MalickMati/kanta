@@ -300,7 +300,7 @@
 
 <body>
     <div id="printing">
-        <h1>AL HAMD COMPUTERIZED KANTA</h1>
+        <h1>{{ $company->value }}</h1>
         <h2>{{ $address->value }}</h2>
         <div class="data">
             <div class="fside">
@@ -335,11 +335,11 @@
                     </div>
                 </div>
                 <div class="frow frow3">
-                    <p>Discription</p>
+                    <p>Description</p>
                     <p>Mounds</p>
                 </div>
                 <div class="frow frow4">
-                    <input type="text" id="pdiscip" disabled value="{{ $record->description }}">
+                    <input type="text" id="pdiscip" disabled value="{{ $record->description ? $record->description : '-' }}">
                     <div style="display: inline-block;">
                         <input type="text" disabled value="40 Kg">
                         <!-- <input type="text" id="pmounds" disabled value="{{ $record->net_weight ? number_format($record->net_weight / 40, 1) : '' }}"> -->
@@ -357,7 +357,9 @@
             <div class="sside">
                 <div class="srow srow1">
                     <div class="inrow1">
-
+                        @if ($contact != null)
+                            <strong>Contact No.</strong> {{ $contact->value }}
+                        @endif
                     </div>
                     <div class="inrow2">
 
