@@ -4,7 +4,7 @@
 
 @section('css')
   <style>
-    /* Surface & motion tokens (override or extend your existing vars) */
+    /* Surface & motion tokens */
     :root {
       --radius-lg: 16px;
       --radius: 12px;
@@ -19,6 +19,12 @@
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 1.25rem;
       align-items: stretch;
+    }
+
+    .two-col-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
     }
 
     /* Card */
@@ -78,21 +84,10 @@
       flex: 0 0 auto;
     }
 
-    .icon-1 {
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    }
-
-    .icon-2 {
-      background: linear-gradient(135deg, #10b981, #06b6d4);
-    }
-
-    .icon-3 {
-      background: linear-gradient(135deg, #f59e0b, #ef4444);
-    }
-
-    .icon-4 {
-      background: linear-gradient(135deg, #8b5cf6, #ec4899);
-    }
+    .icon-1 { background: linear-gradient(135deg, #3b82f6, #8b5cf6); }
+    .icon-2 { background: linear-gradient(135deg, #10b981, #06b6d4); }
+    .icon-3 { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+    .icon-4 { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
 
     .stat-info {
       position: relative;
@@ -113,23 +108,68 @@
       margin: 0;
     }
 
-    /* Recent activity */
-    .recent-activity {
-      grid-column: span 4;
-      padding: 1.25rem;
-    }
-
     .section-title {
       font-size: 1.1rem;
       font-weight: 700;
       letter-spacing: -0.01em;
       margin: 0 0 1rem 0;
+      position: relative;
+      z-index: 1;
     }
 
+    /* Charts */
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+        z-index: 1;
+    }
+
+    /* Tables */
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        z-index: 1;
+        position: relative;
+    }
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+    .data-table th, .data-table td {
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid color-mix(in oklab, var(--border) 60%, transparent);
+        font-size: 0.95rem;
+    }
+    .data-table th {
+        font-weight: 600;
+        color: var(--text-secondary);
+        background: color-mix(in oklab, var(--bg-primary) 50%, transparent);
+        border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+    .data-table tr:last-child td {
+        border-bottom: none;
+    }
+    .data-table tr:hover td {
+        background: color-mix(in oklab, var(--bg-primary) 80%, transparent);
+    }
+    .badge {
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        background: color-mix(in oklab, var(--accent) 15%, transparent);
+        color: var(--accent);
+    }
+
+    /* Recent activity */
     .activity-list {
       display: flex;
       flex-direction: column;
       gap: 0.85rem;
+      position: relative;
+      z-index: 1;
     }
 
     .activity-item {
@@ -182,103 +222,32 @@
       opacity: .9;
     }
 
-    /* Focus states for keyboard users */
-    .card:focus-within,
-    .activity-item:focus-within {
-      box-shadow: var(--ring), 0 8px 24px rgba(0, 0, 0, 0.06);
-      outline: none;
-    }
-
     /* Light/Glass tweak: respect theme */
     @media (prefers-color-scheme: light) {
-      .card {
-        background: var(--glass);
-      }
+      .card { background: var(--glass); }
     }
-
     @media (prefers-color-scheme: dark) {
-      .card {
-        background: var(--glass-dark);
-      }
-    }
-
-    /* Motion safety */
-    @media (prefers-reduced-motion: reduce) {
-
-      .card,
-      .activity-item {
-        transition: none;
-      }
+      .card { background: var(--glass-dark); }
     }
 
     /* Responsive */
     @media (max-width: 1280px) {
-      .dashboard-content {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .recent-activity {
-        grid-column: span 3;
-      }
+      .dashboard-content { grid-template-columns: repeat(2, 1fr); }
     }
-
     @media (max-width: 1024px) {
-      .dashboard-content {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .recent-activity {
-        grid-column: span 2;
-      }
+      .two-col-grid { grid-template-columns: 1fr; }
     }
-
     @media (max-width: 768px) {
-      .main-content {
-        margin-left: 0;
-        width: 100%;
-        padding: 1rem;
-        padding-top: 3rem !important;
-      }
-
-      .dashboard-content {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-
-      .recent-activity {
-        grid-column: span 1;
-      }
-
-      .stat-card {
-        flex-direction: row;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .card {
-        padding: 1rem;
-      }
-
-      .stat-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 1.2rem;
-      }
-
-      .stat-info h3 {
-        font-size: 1.25rem;
-      }
-
-      .activity-item {
-        padding: 0.8rem;
-      }
+      .dashboard-content { grid-template-columns: 1fr; gap: 1rem; }
+      .stat-card { flex-direction: row; }
     }
   </style>
 @endsection
 
 @section('main-content')
-  <x-header heading="Dashboard" para="Welcome back, {{ Auth::user()->username }}! Here's your overview." />
-  <div class="dashboard-content">
+  <x-header heading="Dashboard" para="Welcome back, {{ Auth::user()->username }}! Here's your {{ $isAdmin ? 'administrative ' : '' }}overview." />
+  
+  <div class="dashboard-content" style="margin-bottom: 1.25rem;">
     <div class="card stat-card">
       <div class="stat-icon icon-1">
         <i class="svg-icon"><x-icons name="weight" /></i>
@@ -291,7 +260,7 @@
 
     <div class="card stat-card">
       <div class="stat-icon icon-2">
-        <i class="svg-icon"><x-icons name="invoice"/></i>
+        <i class="svg-icon"><x-icons name="calender"/></i>
       </div>
       <div class="stat-info">
         <h3>{{ $weekly_weight ?? '-' }}</h3>
@@ -314,29 +283,225 @@
         <i class="svg-icon"><x-icons name="chart-line"/></i>
       </div>
       <div class="stat-info">
-        <h3>{{ $amount_month ?? '-' }}</h3>
-        <p>Amount This Month</p>
+        <h3>Rs. {{ number_format($amount_month ?? 0) }}</h3>
+        <p>Revenue This Month</p>
       </div>
     </div>
+  </div>
 
-    <div class="card recent-activity">
+  <div class="two-col-grid" style="margin-bottom: 1.25rem;">
+    <div class="card">
+        <h2 class="section-title">7-Day Weighings Trend</h2>
+        <div class="chart-container">
+            <canvas id="weighingsChart"></canvas>
+        </div>
+    </div>
+    <div class="card">
+        <h2 class="section-title">7-Day Revenue Trend</h2>
+        <div class="chart-container">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+  </div>
+
+  <div class="two-col-grid">
+    @if($isAdmin)
+    <div class="card" style="grid-column: span 1;">
+        <h2 class="section-title">Operator Performance (This Month)</h2>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Operator</th>
+                        <th>Today</th>
+                        <th>Monthly Weighings</th>
+                        <th>Monthly Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($operatorsData as $op)
+                    <tr>
+                        <td>
+                            <div style="font-weight: 600;">{{ $op['username'] }}</div>
+                        </td>
+                        <td><span class="badge">{{ $op['today'] }}</span></td>
+                        <td>{{ $op['month'] }}</td>
+                        <td style="font-weight: 600; color: var(--success);">Rs. {{ number_format($op['revenue_month']) }}</td>
+                    </tr>
+                    @endforeach
+                    @if(count($operatorsData) == 0)
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 2rem;">No active operators found.</td>
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
+    <div class="card recent-activity" style="{{ $isAdmin ? '' : 'grid-column: span 2;' }}">
       <h2 class="section-title">Recent Activity</h2>
       <div class="activity-list">
-        @if (!empty($recent))
+        @if (!empty($recent) && count($recent) > 0)
           @foreach ($recent as $record)
             <div class="activity-item">
               <div class="activity-icon">
                 <i class="svg-icon"><x-icons name="weight" /></i>
               </div>
               <div class="activity-details">
-                <h4>Weight Recorded</h4>
+                <h4>Weight Recorded @if($isAdmin) by <span style="color: var(--accent);">{{ $record->created_by }}</span> @endif</h4>
                 <p>Vehicle #{{ $record->vehicle_number }} - {{ $record->first_weight }} kg</p>
               </div>
-              <div class="activity-time">{{ \Carbon\Carbon::parse($record->created_at)->format('h:i A') }}</div>
+              <div class="activity-time">{{ \Carbon\Carbon::parse($record->created_at)->format('d M, h:i A') }}</div>
             </div>
           @endforeach
+        @else
+            <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">No recent activity found.</div>
         @endif
       </div>
     </div>
   </div>
+@endsection
+
+@section('script')
+<script src="{{ asset('js/chart.min.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rawChartData = {!! $chartData !!};
+        
+        // Setup Chart defaults
+        Chart.defaults.color = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim();
+        Chart.defaults.font.family = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+        
+        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+        const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+        
+        // --- Weighings Chart ---
+        const ctxWeighings = document.getElementById('weighingsChart').getContext('2d');
+        const weighingsGradient = ctxWeighings.createLinearGradient(0, 0, 0, 300);
+        weighingsGradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)'); // --accent
+        weighingsGradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+        
+        new Chart(ctxWeighings, {
+            type: 'line',
+            data: {
+                labels: rawChartData.labels,
+                datasets: [{
+                    label: 'Weighings',
+                    data: rawChartData.weighings,
+                    borderColor: '#3b82f6',
+                    backgroundColor: weighingsGradient,
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#3b82f6',
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: isDarkMode ? '#1e293b' : '#fff',
+                        titleColor: isDarkMode ? '#f1f5f9' : '#1e293b',
+                        bodyColor: isDarkMode ? '#94a3b8' : '#64748b',
+                        borderColor: isDarkMode ? '#334155' : '#e2e8f0',
+                        borderWidth: 1,
+                        padding: 10,
+                        boxPadding: 4
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { maxRotation: 0 }
+                    },
+                    y: {
+                        grid: { color: gridColor },
+                        beginAtZero: true,
+                        ticks: { precision: 0 }
+                    }
+                }
+            }
+        });
+
+        // --- Revenue Chart ---
+        const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+        const revenueGradient = ctxRevenue.createLinearGradient(0, 0, 0, 300);
+        revenueGradient.addColorStop(0, 'rgba(16, 185, 129, 0.5)'); // --success
+        revenueGradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+        new Chart(ctxRevenue, {
+            type: 'line',
+            data: {
+                labels: rawChartData.labels,
+                datasets: [{
+                    label: 'Revenue (Rs.)',
+                    data: rawChartData.revenue,
+                    borderColor: '#10b981',
+                    backgroundColor: revenueGradient,
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#10b981',
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: isDarkMode ? '#1e293b' : '#fff',
+                        titleColor: isDarkMode ? '#f1f5f9' : '#1e293b',
+                        bodyColor: isDarkMode ? '#94a3b8' : '#64748b',
+                        borderColor: isDarkMode ? '#334155' : '#e2e8f0',
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += 'Rs. ' + new Intl.NumberFormat('en-IN').format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { maxRotation: 0 }
+                    },
+                    y: {
+                        grid: { color: gridColor },
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                if (value === 0) return '0';
+                                return 'Rs. ' + new Intl.NumberFormat('en-IN', { notation: "compact" , compactDisplay: "short" }).format(value);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
 @endsection

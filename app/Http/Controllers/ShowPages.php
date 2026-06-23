@@ -21,33 +21,86 @@ class ShowPages extends Controller
             return redirect()->route('login.form')->with('error', 'Login to access this page please');
         }
 
-        $today_weight = Detail::where('created_by', Auth::user()->username)->whereBetween('created_at', [
-            Carbon::now()->startOfDay(),
-            Carbon::now()->endOfDay(),
-        ])->count();
-        $week_weight = Detail::where('created_by', Auth::user()->username)->whereBetween('created_at', [
-            Carbon::now()->startOfWeek(),   // Monday by default
-            Carbon::now()->endOfWeek()
-        ])->count();
-        $month_weight = Detail::where('created_by', Auth::user()->username)->whereBetween('created_at', [
-            Carbon::now()->startOfMonth(),
-            Carbon::now()->endOfMonth(),
-        ])->count();
+        $user = Auth::user();
+        $isAdmin = $user->role === 'admin';
 
-        $amount_month = Detail::where('created_by', Auth::user()->username)
-            ->whereBetween('created_at', [
-                Carbon::now()->startOfMonth(),
-                Carbon::now()->endOfMonth(),
-            ])
-            ->sum('amount');
+        $todayStart = Carbon::now()->startOfDay();
+        $todayEnd = Carbon::now()->endOfDay();
+        $weekStart = Carbon::now()->startOfWeek();
+        $weekEnd = Carbon::now()->endOfWeek();
+        $monthStart = Carbon::now()->startOfMonth();
+        $monthEnd = Carbon::now()->endOfMonth();
 
-        $recent_weights = Detail::orderBy('created_at', 'desc')->take(5)->get();
+        // Base query for counts/amounts based on role
+        $baseQuery = Detail::query();
+        if (!$isAdmin) {
+            $baseQuery->where('created_by', $user->username);
+        }
+
+        $today_weight = (clone $baseQuery)->whereBetween('created_at', [$todayStart, $todayEnd])->count();
+        $week_weight = (clone $baseQuery)->whereBetween('created_at', [$weekStart, $weekEnd])->count();
+        $month_weight = (clone $baseQuery)->whereBetween('created_at', [$monthStart, $monthEnd])->count();
+        $amount_month = (clone $baseQuery)->whereBetween('created_at', [$monthStart, $monthEnd])->sum('amount');
+        
+        // Additional metric: today's revenue
+        $amount_today = (clone $baseQuery)->whereBetween('created_at', [$todayStart, $todayEnd])->sum('amount');
+
+        // Chart Data: Last 7 Days (Weighings & Revenue)
+        $chartData = [
+            'labels' => [],
+            'weighings' => [],
+            'revenue' => []
+        ];
+        
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i);
+            $chartData['labels'][] = $date->format('M d');
+            
+            $dayQuery = (clone $baseQuery)->whereBetween('created_at', [
+                $date->copy()->startOfDay(),
+                $date->copy()->endOfDay()
+            ]);
+            
+            $chartData['weighings'][] = $dayQuery->count();
+            $chartData['revenue'][] = $dayQuery->sum('amount');
+        }
+
+        // Recent activity
+        $recentQuery = Detail::orderBy('created_at', 'desc')->take(5);
+        if (!$isAdmin) {
+            $recentQuery->where('created_by', $user->username);
+        }
+        $recent_weights = $recentQuery->get();
+
+        // Admin specific data: active operators performance
+        $operatorsData = [];
+        if ($isAdmin) {
+            $operators = User::where('role', '!=', 'admin')->get();
+            foreach ($operators as $operator) {
+                $operatorsData[] = [
+                    'username' => $operator->username,
+                    'today' => Detail::where('created_by', $operator->username)->whereBetween('created_at', [$todayStart, $todayEnd])->count(),
+                    'month' => Detail::where('created_by', $operator->username)->whereBetween('created_at', [$monthStart, $monthEnd])->count(),
+                    'revenue_month' => Detail::where('created_by', $operator->username)->whereBetween('created_at', [$monthStart, $monthEnd])->sum('amount')
+                ];
+            }
+            
+            // Sort operators by revenue descending
+            usort($operatorsData, function ($a, $b) {
+                return $b['revenue_month'] <=> $a['revenue_month'];
+            });
+        }
+
         return view('pages.dashboard', [
+            'isAdmin' => $isAdmin,
             'today_weight' => $today_weight,
             'weekly_weight' => $week_weight,
             'monthly_weight' => $month_weight,
             'amount_month' => $amount_month,
-            'recent' => $recent_weights
+            'amount_today' => $amount_today,
+            'chartData' => json_encode($chartData),
+            'recent' => $recent_weights,
+            'operatorsData' => $operatorsData
         ]);
     }
 
