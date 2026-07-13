@@ -91,7 +91,11 @@ class AuthController extends Controller
             return redirect()->route('dashboard')->with('error', 'Only admin can take backups');
         }
         Artisan::call('backup:db');
-        return redirect()->back()->with('success', 'Backup successfull!');
+        
+        // Dispatch the job to send the backup email with Excel and SQL attachments
+        \App\Jobs\SendBackupJob::dispatch();
+
+        return redirect()->back()->with('success', 'Backup successful and email queued!');
     }
 
     public function update(Request $request)

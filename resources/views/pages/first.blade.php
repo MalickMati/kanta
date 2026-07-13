@@ -339,15 +339,31 @@
       // Get all form inputs for Enter key navigation
       const formInputs = Array.from(firstWeightForm.querySelectorAll('input:not([readonly]):not([type="button"]):not([type="submit"])'));
 
+      let liveWeight = 0;
+      if (typeof io !== 'undefined') {
+        const socket = io('http://localhost:3001');
+        socket.on('weight_reading', (weight) => {
+            liveWeight = weight;
+            weightValue.innerText = weight;
+            if (weightDisplay.style.display === 'none') {
+                weightDisplay.style.display = 'block';
+            }
+        });
+        socket.on('scale_error', (msg) => {
+            console.error("Scale Error:", msg);
+            showToast("Scale Error: " + msg, "error");
+        });
+      }
+
       getWeightBtn.addEventListener('click', async e => {
         getWeightBtn.classList.add('loading');
         getWeightBtn.disabled = true;
         
-        const res = await ajaxRequest("{{ route('get.weight') }}", "GET",);
-
-        firstWeightInput.value = res.weight;
-        getWeightBtn.classList.remove('loading');
-        getWeightBtn.disabled = false;
+        setTimeout(() => {
+            firstWeightInput.value = liveWeight;
+            getWeightBtn.classList.remove('loading');
+            getWeightBtn.disabled = false;
+        }, 200);
       });
 
       formInputs.forEach((input, index) => {

@@ -541,17 +541,32 @@
         }
       }
 
+      let liveWeight = 0;
+      if (typeof io !== 'undefined') {
+        const socket = io('http://localhost:3001');
+        socket.on('weight_reading', (weight) => {
+            liveWeight = weight;
+            weightValue.innerText = weight;
+            if (weightDisplay.style.display === 'none') {
+                weightDisplay.style.display = 'block';
+            }
+        });
+        socket.on('scale_error', (msg) => {
+            console.error("Scale Error:", msg);
+            showToast("Scale Error: " + msg, "error");
+        });
+      }
+
       // Get weight from serial port simulation
-      getWeightBtn.addEventListener('click', async e => {
+      getWeightBtn.addEventListener('click', e => {
         getWeightBtn.classList.add('loading');
         getWeightBtn.disabled = true;
 
-        const res = await ajaxRequest("{{ route('get.weight') }}", "GET",);
-
-        secondWeightInput.value = res.weight;
-
-        getWeightBtn.classList.remove('loading');
-        getWeightBtn.disabled = false;
+        setTimeout(() => {
+            secondWeightInput.value = liveWeight;
+            getWeightBtn.classList.remove('loading');
+            getWeightBtn.disabled = false;
+        }, 200);
       });
 
       secondWeightForm.addEventListener('submit', async e => {

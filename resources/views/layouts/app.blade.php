@@ -241,6 +241,7 @@
     };
   </script>
 
+  <script src="http://localhost:3001/socket.io/socket.io.js"></script>
   @yield('script')
 </body>
 </html>
