@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '../.env' });
 const express = require('express');
 const { SerialPort, ReadlineParser } = require('serialport');
 const { Server } = require('socket.io');
@@ -25,6 +26,7 @@ app.get('/', (req, res) => {
 
 let currentPort = null;
 let parser = null;
+let dataTimeout = null;
 
 // Helper to log with timestamp
 function log(msg) {
@@ -37,11 +39,12 @@ async function detectSerialPort() {
         const ports = await SerialPort.list();
         if (ports.length === 0) return null;
 
-        // Try to prioritize USB devices over standard serial if multiple exist
-        const usbPorts = ports.filter(p => p.path.includes('USB') || p.path.includes('ACM'));
-        if (usbPorts.length > 0) return usbPorts[0].path;
+        // The user explicitly requested to prioritize real hardware serial ports over USB
+        const hardwarePorts = ports.filter(p => !p.path.includes('USB') && !p.path.includes('ACM'));
+        
+        if (hardwarePorts.length > 0) return hardwarePorts[0].path;
 
-        // Fallback to first available port
+        // Fallback to first available port if no hardware ports are found
         return ports[0].path;
     } catch (err) {
         log(`Error listing serial ports: ${err.message}`);
@@ -78,11 +81,27 @@ async function connectToScale() {
             return;
         }
         log(`Successfully opened port ${devicePath}`);
-        io.emit('scale_status', `Connected to scale on ${devicePath}`);
+        io.emit('scale_status', `Connected to scale on ${devicePath} (Waiting for data...)`);
+        
+        // Setup a warning if no data is received within 10 seconds
+        dataTimeout = setTimeout(() => {
+            log(`Warning: Opened ${devicePath} but receiving no data. Is the scale turned on and plugged in?`);
+            io.emit('scale_error', `Port ${devicePath} is open, but no data is being received. Check scale connection.`);
+        }, 10000);
     });
 
     // Handle incoming data
     parser.on('data', (data) => {
+        // Clear the warning timeout since we got data
+        if (dataTimeout) {
+            clearTimeout(dataTimeout);
+            dataTimeout = null;
+            io.emit('scale_status', `Connected and receiving data from ${devicePath}`);
+        }
+
+        // Emit the pure raw string immediately
+        io.emit('raw_data', data);
+
         const line = data.trim();
         // Remove common unit suffixes like kg, g, lb, etc.
         const clean = line.replace(/\s*(kg|g|lb|lbs|oz)\b/ig, '').trim();
@@ -129,6 +148,16 @@ io.on('connection', (socket) => {
     } else {
         socket.emit('scale_status', 'Disconnected');
     }
+
+    // Client requests list of ports
+    socket.on('get_ports', async () => {
+        try {
+            const ports = await SerialPort.list();
+            socket.emit('ports_list', ports);
+        } catch (err) {
+            log(`Error getting ports for client: ${err.message}`);
+        }
+    });
 
     socket.on('disconnect', () => {
         log(`Frontend client disconnected: ${socket.id}`);

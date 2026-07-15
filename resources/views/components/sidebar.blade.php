@@ -372,6 +372,10 @@
                     <i class="svg-icon"><x-icons name="settings" /></i>
                     <span class="nav-text">Settings</span>
                 </a>
+                <a href="{{ route('scale.monitor') }}" class="nav-item {{ request()->routeIs('scale.monitor') ? 'active' : '' }}">
+                    <i class="svg-icon"><x-icons name="dashboard" /></i>
+                    <span class="nav-text">Scale Monitor</span>
+                </a>
                 <a href="{{ route('backup') }}" class="nav-item {{ request()->routeIs('backup') ? 'active' : '' }}">
                     <i class="svg-icon"><x-icons name="save" /></i>
                     <span class="nav-text">Create Backup</span>

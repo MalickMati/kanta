@@ -39,9 +39,11 @@ class SendBackupJob implements ShouldQueue
 
         // Generate the Excel file
         $excelFileName = 'backup-' . date('Y-m-d_H-i-s') . '.xlsx';
-        $excelPath = storage_path('app/' . $excelFileName);
         
         \Maatwebsite\Excel\Facades\Excel::store(new \App\Exports\DetailsExport, $excelFileName);
+        
+        // Get the absolute path to the file using the Storage facade
+        $excelPath = \Illuminate\Support\Facades\Storage::disk('local')->path($excelFileName);
 
         // Get the email
         $email = env('EMAIL_FOR_BACKUP');

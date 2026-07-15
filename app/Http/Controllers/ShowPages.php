@@ -798,4 +798,14 @@ class ShowPages extends Controller
             }
         }
     }
+
+    public function showScaleMonitor()
+    {
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            abort(403, 'Unauthorized access - Admins only');
+        }
+
+        return view('pages.scale_monitor');
+    }
 }
+

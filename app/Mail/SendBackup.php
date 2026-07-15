@@ -2,45 +2,38 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Attachment;
 
+/**
+ * NOTE: This mailable intentionally does NOT implement ShouldQueue.
+ * Sending is handled by the parent SendBackupJob which is already queued.
+ * File content is embedded directly so the file can be safely deleted afterwards.
+ */
 class SendBackup extends Mailable
 {
-    use Queueable, SerializesModels;
+    public string $excelContent;
+    public string $excelName;
+    public ?string $sqlContent;
+    public ?string $sqlName;
 
-    /**
-     * Create a new message instance.
-     */
-    public $excelPath;
-    public $sqlPath;
-
-    /**
-     * Create a new message instance.
-     */
-    public function __construct($excelPath, $sqlPath)
+    public function __construct(string $excelPath, ?string $sqlPath)
     {
-        $this->excelPath = $excelPath;
-        $this->sqlPath = $sqlPath;
+        $this->excelContent = file_exists($excelPath) ? file_get_contents($excelPath) : '';
+        $this->excelName    = basename($excelPath);
+        $this->sqlContent   = ($sqlPath && file_exists($sqlPath)) ? file_get_contents($sqlPath) : null;
+        $this->sqlName      = $sqlPath ? basename($sqlPath) : null;
     }
 
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Send Backup',
+            subject: 'Database Backup – ' . now()->format('d M Y'),
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
         return new Content(
@@ -48,21 +41,22 @@ class SendBackup extends Mailable
         );
     }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
     public function attachments(): array
     {
         $attachments = [];
 
-        if (file_exists($this->excelPath)) {
-            $attachments[] = \Illuminate\Mail\Mailables\Attachment::fromPath($this->excelPath);
+        if (!empty($this->excelContent)) {
+            $attachments[] = Attachment::fromData(
+                fn () => $this->excelContent,
+                $this->excelName
+            )->withMime('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         }
 
-        if (file_exists($this->sqlPath)) {
-            $attachments[] = \Illuminate\Mail\Mailables\Attachment::fromPath($this->sqlPath);
+        if (!empty($this->sqlContent)) {
+            $attachments[] = Attachment::fromData(
+                fn () => $this->sqlContent,
+                $this->sqlName
+            )->withMime('application/sql');
         }
 
         return $attachments;

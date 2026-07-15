@@ -38,6 +38,7 @@ Route::put('/profile/password', [AuthController::class, 'updatePassword'])->name
 
 Route::get('/settings', [ShowPages::class, 'showSettings'])->name('settings.page');
 Route::get('/print-preview', [ShowPages::class, 'showprintpreview'])->name('print.preview');
+Route::get('/scale-monitor', [ShowPages::class, 'showScaleMonitor'])->name('scale.monitor');
 
 Route::get('/records', [ShowPages::class, 'recordsPage'])->name('records.page');
 Route::get('/records/periods', [ShowPages::class, 'periodOptions'])->name('records.periods');
