@@ -1,45 +1,41 @@
-# 🚀 Complete Laravel Application Documentation & Setup Guide
+# 🚀 Complete Laravel Application & Microservices Documentation
 
-Welcome to the comprehensive guide for setting up, configuring, and running this Laravel project on both **Linux (Ubuntu/Debian)** and **Windows** operating systems.
+Welcome to the all-in-one guide for setting up, configuring, running, and managing this Laravel application along with its auxiliary Node.js microservices (`scale_service` and `printer_service`) on both **Linux (Ubuntu/Debian)** and **Windows** operating systems.
 
 ---
 
 ## 📋 Table of Contents
 1. [Linux Installation Guide (Ubuntu / Debian)](#-linux-installation-guide-ubuntu--debian)
-   - [1. Update & System Dependencies](#1-update--system-dependencies)
+   - [1. System Update & Dependencies](#1-system-update--dependencies)
    - [2. Install PHP & Required Extensions](#2-install-php--required-extensions)
    - [3. Install MySQL Server & Database Setup](#3-install-mysql-server--database-setup)
    - [4. Install Composer](#4-install-composer)
    - [5. Install Node.js & NPM](#5-install-nodejs--npm)
+   - [6. Additional Tools for Microservices (CUPS, Chrome & Serial Access)](#6-additional-tools-for-microservices-cups-chrome--serial-access)
 2. [Windows Installation Guide](#-windows-installation-guide)
    - [Option A: Using XAMPP / WAMP](#option-a-using-xampp--wamp)
-   - [Option B: Using Composer & Node.js Directly](#option-b-using-composer--nodejs-directly)
-3. [Laravel Application Setup](#-laravel-application-setup)
-   - [Step 1: Clone or Open Project](#step-1-clone-or-open-project)
-   - [Step 2: Install PHP Dependencies](#step-2-install-php-dependencies)
-   - [Step 3: Install Node.js Dependencies](#step-3-install-nodejs-dependencies)
-   - [Step 4: Environment Configuration (`.env`)](#step-4-environment-configuration-env)
-   - [Step 5: Generate Application Key](#step-5-generate-application-key)
-   - [Step 6: Run Database Migrations & Seeders](#step-6-run-database-migrations--seeders)
-   - [Step 7: Storage Link & Permissions](#step-7-storage-link--permissions)
-   - [Step 8: Start the Local Development Server](#step-8-start-the-local-development-server)
-4. [Useful Artisan & Management Commands](#-useful-artisan--management-commands)
-5. [Complete `.env` File Environment Variables Documentation](#-complete-env-file-environment-variables-documentation)
+   - [Option B: Using Standalone Drivers & Services](#option-b-using-standalone-drivers--services)
+3. [Laravel Main Application Setup](#-laravel-main-application-setup)
+4. [Microservices Setup & Configuration](#-microservices-setup--configuration)
+   - [A. Scale Microservice (`scale_service`)](#a-scale-microservice-scale_service)
+   - [B. Printer Microservice (`printer_service`)](#b-printer-microservice-printer_service)
+   - [C. PM2 Process Manager Setup (Recommended for Production)](#c-pm2-process-manager-setup-recommended-for-production)
+5. [Useful Artisan & Management Commands](#-useful-artisan--management-commands)
+6. [Complete `.env` File Environment Variables Documentation](#-complete-env-file-environment-variables-documentation)
 
 ---
 
 ## 🐧 Linux Installation Guide (Ubuntu / Debian)
 
-Below are the step-by-step terminal commands to install all required software (PHP, MySQL, Composer, Node.js) on a fresh Linux server/machine.
+Execute the following commands in order to set up a fresh Linux machine.
 
-### 1. Update & System Dependencies
+### 1. System Update & Dependencies
 ```bash
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y curl wget unzip git software-properties-common ca-certificates lsb-release
+sudo apt install -y curl wget unzip git software-properties-common ca-certificates lsb-release build-essential
 ```
 
 ### 2. Install PHP & Required Extensions
-Laravel requires PHP (version 8.2 or higher recommended) with several core extensions:
 ```bash
 # Add Ondrej Surý PPA for latest PHP versions
 sudo add-apt-repository ppa:ondrej/php -y
@@ -62,42 +58,46 @@ sudo apt install -y mysql-server
 sudo systemctl start mysql
 sudo systemctl enable mysql
 
-# Secure MySQL Installation (Optional but recommended)
-sudo mysql_secure_installation
-
-# Log in to MySQL console to create database & user
-sudo mysql -u root -p
-```
-Inside the MySQL terminal prompt, execute:
-```sql
-CREATE DATABASE kanta_laravel CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'kanta_user'@'localhost' IDENTIFIED BY 'YourSecurePassword123!';
-GRANT ALL PRIVILEGES ON kanta_laravel.* TO 'kanta_user'@'localhost';
-FLUSH PRIVILEGES;
-EXIT;
+# Create database and user
+sudo mysql -u root -e "CREATE DATABASE kanta_laravel CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+sudo mysql -u root -e "CREATE USER 'kanta_user'@'localhost' IDENTIFIED BY 'YourSecurePassword123!';"
+sudo mysql -u root -e "GRANT ALL PRIVILEGES ON kanta_laravel.* TO 'kanta_user'@'localhost';"
+sudo mysql -u root -e "FLUSH PRIVILEGES;"
 ```
 
 ### 4. Install Composer
 ```bash
-# Download and install Composer globally
 cd ~
 curl -sS https://getcomposer.org/installer | php
 sudo mv composer.phar /usr/local/bin/composer
 chmod +x /usr/local/bin/composer
-
-# Verify Composer installation
 composer --version
 ```
 
 ### 5. Install Node.js & NPM
 ```bash
-# Add NodeSource repository for Node.js 20.x LTS
+# Install Node.js 20.x LTS
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
-
-# Verify Node & NPM installation
 node -v
 npm -v
+```
+
+### 6. Additional Tools for Microservices (CUPS, Chrome & Serial Access)
+- **Scale Service Requirements**: Grant current user permission to access serial COM/USB ports (`dialout` group).
+- **Printer Service Requirements**: Install Google Chrome and CUPS (`lp` print command).
+
+```bash
+# Grant user access to serial hardware ports (/dev/ttyUSB*, /dev/ttyS*)
+sudo usermod -a -G dialout $USER
+
+# Install CUPS printing system and Google Chrome for PDF/HTML rendering
+sudo apt install -y cups cups-client
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt --fix-broken install -y
+
+# Restart your user session or reboot for group changes to take effect:
+# sudo reboot
 ```
 
 ---
@@ -105,85 +105,179 @@ npm -v
 ## 🪟 Windows Installation Guide
 
 ### Option A: Using XAMPP / WAMP
-1. **Download & Install XAMPP** (with PHP 8.2+): [Apache Friends Website](https://www.apachefriends.org/)
+1. **Install XAMPP** (with PHP 8.2+): [Apache Friends Website](https://www.apachefriends.org/).
 2. **Start Services**: Open XAMPP Control Panel and start **Apache** and **MySQL**.
-3. **Install Composer**: Download and run the Windows installer from [GetComposer.org](https://getcomposer.org/Composer-Setup.exe).
-4. **Install Node.js**: Download and install LTS version from [Nodejs.org](https://nodejs.org/).
-5. **Create Database**: Open `http://localhost/phpmyadmin` in browser and create a new database named `kanta_laravel`.
+3. **Install Composer**: Download from [GetComposer.org](https://getcomposer.org/Composer-Setup.exe).
+4. **Install Node.js**: Download LTS installer from [Nodejs.org](https://nodejs.org/).
+5. **Create Database**: Open `http://localhost/phpmyadmin` and create database `kanta_laravel`.
 
-### Option B: Using Composer & Node.js Directly
-1. Download PHP for Windows from [windows.php.net](https://windows.php.net/download/) and add PHP path to environment variables (`PATH`).
-2. Enable extensions in `php.ini`: `extension=pdo_mysql`, `extension=mbstring`, `extension=openssl`, `extension=curl`, `extension=fileinfo`, `extension=gd`.
-3. Install **MySQL Installer for Windows** or use SQLite.
-4. Install **Composer Windows Installer**.
-5. Install **Node.js Windows Installer**.
+### Option B: Using Standalone Drivers & Services
+1. Install PHP for Windows from [windows.php.net](https://windows.php.net/download/). Enable extensions: `pdo_mysql`, `mbstring`, `openssl`, `curl`, `gd`, `fileinfo`.
+2. Install **MySQL Installer for Windows**.
+3. Install **Composer** & **Node.js**.
+4. Configure Printer in Windows Settings and ensure default printer is designated.
 
 ---
 
-## 🛠️ Laravel Application Setup
+## 🛠️ Laravel Main Application Setup
 
-Execute these commands inside your project root folder (`Kanta_Laravel`).
+Navigate to your root project folder (`Kanta_Laravel`):
 
-### Step 1: Clone or Open Project
+### 1. Install Dependencies
 ```bash
-# Linux / Windows Git Bash
-git clone <repository_url>
-cd Kanta_Laravel
-```
-
-### Step 2: Install PHP Dependencies
-```bash
+# Install PHP dependencies
 composer install
-```
 
-### Step 3: Install Node.js Dependencies
-```bash
+# Install Frontend assets & build
 npm install
-npm run build   # Compile assets for production
-# OR
-npm run dev     # Run Vite development server
+npm run build
 ```
 
-### Step 4: Environment Configuration (`.env`)
-Copy `.env.example` to `.env`:
-
-*On Linux / macOS:*
+### 2. Environment Setup & Application Key
 ```bash
+# Linux
 cp .env.example .env
-```
 
-*On Windows (CMD / PowerShell):*
-```cmd
+# Windows (CMD)
 copy .env.example .env
-```
 
-### Step 5: Generate Application Key
-```bash
+# Generate Key
 php artisan key:generate
 ```
 
-### Step 6: Run Database Migrations & Seeders
+### 3. Database Migration & Storage Link
 ```bash
 php artisan migrate --seed
-```
-
-### Step 7: Storage Link & Permissions
-Create symbolic link for file storage uploads:
-```bash
 php artisan storage:link
 ```
 
-*On Linux, give proper permissions to storage & cache folders:*
+*For Linux permissions:*
 ```bash
 sudo chown -R $USER:www-data storage bootstrap/cache
 sudo chmod -R 775 storage bootstrap/cache
 ```
 
-### Step 8: Start the Local Development Server
+### 4. Run Laravel Server
 ```bash
 php artisan serve
 ```
-Access the application in your web browser at: `http://127.0.0.1:8000`
+App will be accessible at: `http://127.0.0.1:8000`
+
+---
+
+## 🔌 Microservices Setup & Configuration
+
+This system utilizes two standalone Node.js microservices:
+1. **Scale Service (`scale_service`)**: Reads real-time weight measurements from RS232/USB serial weighing indicators and broadcasts readings via WebSockets (`Socket.io`).
+2. **Printer Service (`printer_service`)**: Receives print requests (HTML/CSS) over an Express HTTP API, generates background PDF print jobs via Puppeteer/Chrome, and dispatches them silently to the default system printer using native print commands (`lp`).
+
+---
+
+### A. Scale Microservice (`scale_service`)
+
+#### Purpose & Tech Stack
+- **Tech Stack**: Node.js, Express, Socket.io, SerialPort, Dotenv.
+- **Port**: Default `3001` (Configurable via `WS_PORT` in `.env`).
+- **Functionality**: Scans and auto-detects hardware serial ports (`/dev/ttyS*`, `/dev/ttyUSB*`, COM ports), cleans raw indicator string payloads, parses numeric weight readings, and streams updates to frontend Blade views in real time.
+
+#### Installation & Execution
+```bash
+# 1. Navigate to scale_service directory from project root
+cd scale_service
+
+# 2. Install dependencies
+npm install
+
+# 3. Development / Manual Run
+npm start
+# OR
+node index.js
+```
+
+#### Environment Variables Used by Scale Service
+The scale service reads settings from the parent `../.env` file:
+- `WS_PORT`: WebSocket server port (Default: `3001`).
+- `BAUD_RATE`: Serial communication speed (Default: `9600`).
+- `DEVICE_PATH`: (Optional) Explicit serial port path (e.g., `/dev/ttyUSB0` or `COM3`). If omitted, auto-detects available serial devices.
+
+---
+
+### B. Printer Microservice (`printer_service`)
+
+#### Purpose & Tech Stack
+- **Tech Stack**: Node.js, Express, Puppeteer, Child Process (`lp` command).
+- **Port**: Default `3000` (Configurable via `PORT` environment variable).
+- **Functionality**: Accepts POST requests with raw HTML and copy counts (`/print`), renders exact print templates using headless Chrome, and sends print jobs directly to CUPS/System Printer without browser print popups.
+
+#### Installation & Execution
+```bash
+# 1. Navigate to printer_service directory from project root
+cd printer_service
+
+# 2. Install dependencies
+npm install
+
+# 3. Development / Manual Run
+npm start
+# OR
+node index.js
+```
+
+#### API Endpoint Documentation
+- **Endpoint**: `POST http://localhost:3000/print`
+- **Headers**: `Content-Type: application/json`
+- **Body Payload**:
+```json
+{
+  "html": "<html><body><h1>Kanta Weight Slip</h1><p>Net Weight: 5000 kg</p></body></html>",
+  "quantity": 2
+}
+```
+- **Response**:
+```json
+{
+  "success": true,
+  "message": "Print job sent successfully."
+}
+```
+
+---
+
+### C. PM2 Process Manager Setup (Recommended for Production)
+
+To ensure the Laravel app and both Node.js microservices run continuously in the background and auto-restart on system reboot:
+
+#### 1. Install PM2 Globally
+```bash
+sudo npm install -g pm2
+```
+
+#### 2. Start Services with PM2
+From the root directory (`Kanta_Laravel`):
+
+```bash
+# 1. Start Scale Service
+pm2 start scale_service/index.js --name "kanta-scale-service"
+
+# 2. Start Printer Service
+pm2 start printer_service/index.js --name "kanta-printer-service"
+
+# 3. Start Laravel Queue Worker (Optional/Recommended)
+pm2 start "php artisan queue:work --tries=3" --name "kanta-queue-worker"
+
+# 4. Save PM2 configuration to launch on system boot
+pm2 save
+pm2 startup
+```
+
+#### PM2 Helpful Management Commands
+```bash
+pm2 status             # Display status of all running services
+pm2 logs               # Stream real-time logs from all services
+pm2 logs kanta-scale-service   # View scale service logs only
+pm2 restart all        # Restart all services
+pm2 stop all           # Stop all services
+```
 
 ---
 
@@ -191,98 +285,103 @@ Access the application in your web browser at: `http://127.0.0.1:8000`
 
 | Command | Description |
 | :--- | :--- |
-| `php artisan serve` | Starts local development server |
-| `php artisan migrate` | Executes pending database migrations |
-| `php artisan migrate:fresh --seed` | Wipes database, runs all migrations and populates seed data |
-| `php artisan make:controller NameController` | Creates a new controller class |
+| `php artisan serve` | Starts local web development server |
+| `php artisan migrate` | Runs pending database migrations |
+| `php artisan migrate:fresh --seed` | Re-builds database from scratch with seed data |
+| `php artisan make:controller NameController` | Generates a new controller class |
 | `php artisan make:model ModelName -m` | Creates a model along with a migration file |
 | `php artisan cache:clear` | Clears application cache |
 | `php artisan config:clear` | Clears configuration cache |
 | `php artisan route:clear` | Clears route cache |
-| `php artisan view:clear` | Clears compiled Blade view files |
-| `php artisan optimize:clear` | Clears all cached items (config, route, views) |
-| `php artisan queue:work` | Starts processing background queue jobs |
-| `php artisan storage:link` | Creates symbolic link from `public/storage` to `storage/app/public` |
+| `php artisan view:clear` | Clears compiled Blade views |
+| `php artisan optimize:clear` | Clears all cached application files |
+| `php artisan queue:work` | Starts background queue processor |
+| `php artisan storage:link` | Links `public/storage` to `storage/app/public` |
 
 ---
 
 ## 📘 Complete `.env` File Environment Variables Documentation
 
-The `.env` file contains key-value pairs used to configure environment-specific settings without hardcoding them into application code.
+Below is the exhaustive documentation for all variables in your `.env` configuration file:
 
 ### 🌐 1. Application Configuration (`APP_*`)
-- **`APP_NAME`**: Name of the application (e.g., `"Al Hammad Computerized Kanta"`). Displayed in emails, UI headers, and browser titles.
-- **`APP_ENV`**: Current environment stage (`local`, `testing`, `staging`, `production`). In `local` mode, error details and debugging features are enabled.
-- **`APP_KEY`**: A 32-character base64 encryption key generated via `php artisan key:generate`. Used to encrypt cookies, passwords, session tokens, and sensitive data.
-- **`APP_DEBUG`**: Boolean (`true` or `false`). Controls detailed exception stack trace display in browser. Set to `false` in production!
-- **`APP_URL`**: Root domain/URL of the app (e.g., `http://localhost` or `https://yourdomain.com`). Used for asset links and URL generation in emails.
-- **`APP_LOCALE`**: Default language code for translation files (`en`, `ur`, `es`, etc.).
-- **`APP_FALLBACK_LOCALE`**: Fallback language if a translation string is missing in `APP_LOCALE`.
-- **`APP_FAKER_LOCALE`**: Localization setting for PHP Faker library when seeding test data (e.g., `en_US`).
-- **`APP_MAINTENANCE_DRIVER`**: Driver used when app is in maintenance mode (`file` or `database`).
-- **`PHP_CLI_SERVER_WORKERS`**: Number of worker processes used by `php artisan serve` for handling concurrent requests locally.
+- **`APP_NAME`**: Application title (e.g., `"Al Hammad Computerized Kanta"`).
+- **`APP_ENV`**: Application stage (`local`, `production`, `staging`).
+- **`APP_KEY`**: 32-character base64 application security key (`php artisan key:generate`).
+- **`APP_DEBUG`**: Show detailed error traces (`true` for local development, `false` for production).
+- **`APP_URL`**: Base URL of the app (`http://localhost` or domain name).
+- **`APP_LOCALE`**: App language locale (`en`).
+- **`APP_FALLBACK_LOCALE`**: Fallback language (`en`).
+- **`APP_FAKER_LOCALE`**: Fake data generator region (`en_US`).
+- **`APP_MAINTENANCE_DRIVER`**: Driver for maintenance state (`file` or `database`).
+- **`PHP_CLI_SERVER_WORKERS`**: Workers for built-in PHP server (`4`).
 
 ### 🔐 2. Security Configuration
-- **`BCRYPT_ROUNDS`**: Work factor cost for hashing passwords using bcrypt (default `12`). Higher values increase security but require more CPU processing time.
+- **`BCRYPT_ROUNDS`**: Hashing complexity cost for password encryption (Default: `12`).
 
 ### 📜 3. Logging System (`LOG_*`)
-- **`LOG_CHANNEL`**: Default log channel/driver (`stack`, `single`, `daily`, `stderr`, `syslog`, `slack`).
-- **`LOG_STACK`**: Channels bundled under the stack logger (e.g., `single`).
-- **`LOG_DEPRECATIONS_CHANNEL`**: Channel used for logging PHP deprecation warnings (`null` or `single`).
-- **`LOG_LEVEL`**: Minimum severity level to log (`debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`).
+- **`LOG_CHANNEL`**: Log handler (`stack`, `single`, `daily`, etc.).
+- **`LOG_STACK`**: Channels bundled under stack logging (`single`).
+- **`LOG_DEPRECATIONS_CHANNEL`**: Deprecation log target (`null`).
+- **`LOG_LEVEL`**: Logging severity (`debug`, `info`, `warning`, `error`).
 
 ### 🗄️ 4. Database Configuration (`DB_*`)
-- **`DB_CONNECTION`**: Database driver type (`mysql`, `sqlite`, `pgsql`, `sqlsrv`).
-- **`DB_HOST`**: Database server IP or hostname (`127.0.0.1` for local machine).
-- **`DB_PORT`**: Port number for MySQL database (Default `3306`).
-- **`DB_DATABASE`**: Name of the database schema (e.g., `kanta_laravel`).
-- **`DB_USERNAME`**: Database user login username (e.g., `root` or `kanta_user`).
-- **`DB_PASSWORD`**: Password for the database user account.
+- **`DB_CONNECTION`**: Database engine (`mysql`, `sqlite`, `pgsql`).
+- **`DB_HOST`**: Database server IP (`127.0.0.1`).
+- **`DB_PORT`**: Port number (`3306`).
+- **`DB_DATABASE`**: Target database name (`kanta_laravel`).
+- **`DB_USERNAME`**: Database user (`root` or custom user).
+- **`DB_PASSWORD`**: Password for database authentication.
 
 ### 🔑 5. Session Management (`SESSION_*`)
-- **`SESSION_DRIVER`**: Where session data is stored (`file`, `cookie`, `database`, `apc`, `memcached`, `redis`, `array`).
-- **`SESSION_LIFETIME`**: Inactivity time in minutes before a session expires (default `120` minutes).
-- **`SESSION_ENCRYPT`**: Encrypt session payload data before storage (`false` or `true`).
-- **`SESSION_PATH`**: Cookie path validity (default `/`).
-- **`SESSION_DOMAIN`**: Cookie domain scope (`null` or `.yourdomain.com`).
+- **`SESSION_DRIVER`**: Session storage driver (`database`, `file`, `redis`).
+- **`SESSION_LIFETIME`**: Session timeout in minutes (`120`).
+- **`SESSION_ENCRYPT`**: Encrypt session contents (`false`).
+- **`SESSION_PATH`**: Session cookie path (`/`).
+- **`SESSION_DOMAIN`**: Cookie domain binding (`null`).
 
 ### ⚙️ 6. System Drivers & Queues
-- **`BROADCAST_CONNECTION`**: Driver used for real-time WebSocket events (`log`, `pusher`, `ably`, `reverb`).
-- **`FILESYSTEM_DISK`**: Default storage driver (`local`, `public`, `s3`).
-- **`QUEUE_CONNECTION`**: Driver for asynchronous queue processing (`sync`, `database`, `redis`, `sqs`).
-- **`CACHE_STORE`**: Cache storage backend (`database`, `file`, `redis`, `memcached`).
+- **`BROADCAST_CONNECTION`**: Real-time event driver (`log`, `pusher`, `ably`, `reverb`).
+- **`FILESYSTEM_DISK`**: File storage system (`local`, `public`, `s3`).
+- **`QUEUE_CONNECTION`**: Background queue handler (`database`, `redis`, `sync`).
+- **`CACHE_STORE`**: Cache engine (`database`, `file`, `redis`).
 
-### 📧 7. Mail Server Configuration (`MAIL_*`)
-- **`MAIL_MAILER`**: Email delivery engine (`smtp`, `sendmail`, `mailgun`, `ses`, `log`, `array`).
-- **`MAIL_SCHEME`**: Transport encryption scheme (`tls`, `ssl`, or `null`).
-- **`MAIL_HOST`**: SMTP server address (e.g., `smtp.gmail.com`).
-- **`MAIL_PORT`**: SMTP port (e.g., `587` for TLS / `465` for SSL).
-- **`MAIL_USERNAME`**: Email account username or SMTP address.
-- **`MAIL_PASSWORD`**: Password or app-specific password for the email account.
-- **`MAIL_FROM_ADDRESS`**: Default "Sender" email address shown on outgoing emails.
-- **`MAIL_FROM_NAME`**: Sender name accompanying `MAIL_FROM_ADDRESS` (e.g., `"Al Hamd Kanta"`).
+### ⚖️ 7. Scale Microservice Configuration (`WS_*` & `BAUD_*`)
+- **`WS_PORT`**: Port for WebSocket scale service (`3001`).
+- **`BAUD_RATE`**: Serial port baud rate for scale communication (`9600`).
+- **`DEVICE_PATH`**: Explicit device path (e.g., `/dev/ttyUSB0` or `COM3`). Auto-detected if omitted.
 
-### 🚀 8. In-Memory Caching & Stores (Redis & Memcached)
-- **`MEMCACHED_HOST`**: IP address of Memcached server (`127.0.0.1`).
-- **`REDIS_CLIENT`**: Client extension used for Redis (`phpredis` or `predis`).
-- **`REDIS_HOST`**: IP address of Redis server (`127.0.0.1`).
-- **`REDIS_PASSWORD`**: Authentication password for Redis server (`null` if none).
-- **`REDIS_PORT`**: Port number for Redis service (default `6379`).
+### 📧 8. Mail Server Configuration (`MAIL_*`)
+- **`MAIL_MAILER`**: Email driver (`smtp`, `sendmail`, `log`).
+- **`MAIL_SCHEME`**: Encryption scheme (`null`, `tls`, `ssl`).
+- **`MAIL_HOST`**: SMTP host address (e.g., `smtp.gmail.com`).
+- **`MAIL_PORT`**: Mail port (`587` for TLS / `465` for SSL).
+- **`MAIL_USERNAME`**: Email sender account address.
+- **`MAIL_PASSWORD`**: Email application password.
+- **`MAIL_FROM_ADDRESS`**: Default sender email address.
+- **`MAIL_FROM_NAME`**: Sender display name (e.g., `"Al Hamd Kanta"`).
 
-### ☁️ 9. AWS Cloud Storage Configuration (`AWS_*`)
-- **`AWS_ACCESS_KEY_ID`**: Amazon Web Services IAM access key.
-- **`AWS_SECRET_ACCESS_KEY`**: AWS IAM secret access key.
-- **`AWS_DEFAULT_REGION`**: AWS target region (e.g., `us-east-1`).
-- **`AWS_BUCKET`**: Name of the S3 storage bucket.
-- **`AWS_USE_PATH_STYLE_ENDPOINT`**: Boolean for S3 endpoint formatting.
+### 🚀 9. In-Memory Stores (Redis & Memcached)
+- **`MEMCACHED_HOST`**: Memcached IP (`127.0.0.1`).
+- **`REDIS_CLIENT`**: Redis library (`phpredis` or `predis`).
+- **`REDIS_HOST`**: Redis server address (`127.0.0.1`).
+- **`REDIS_PASSWORD`**: Redis auth password (`null`).
+- **`REDIS_PORT`**: Redis port (`6379`).
 
-### 🎨 10. Frontend Asset Bundler (`VITE_*`)
-- **`VITE_APP_NAME`**: Exposes application name environment variable to frontend Vite/Vue/React scripts (`"${APP_NAME}"`).
+### ☁️ 10. AWS Cloud Storage (`AWS_*`)
+- **`AWS_ACCESS_KEY_ID`**: Amazon S3 key.
+- **`AWS_SECRET_ACCESS_KEY`**: Amazon S3 secret key.
+- **`AWS_DEFAULT_REGION`**: AWS Region (`us-east-1`).
+- **`AWS_BUCKET`**: Bucket name.
+- **`AWS_USE_PATH_STYLE_ENDPOINT`**: S3 URL styling (`false`).
 
-### 📦 11. Custom Application Environment Variables
-- **`BACKUP_LOCATION`**: Directory path on the local or external storage system where automated backups are saved (e.g., `/home/m/KantaBackup` on Linux or `D:\LaravelBackups` on Windows).
-- **`EMAIL_FOR_BACKUP`**: Recipient email address designated to receive system backup alerts and reports (e.g., `malikmati7867@gmail.com`).
+### 🎨 11. Frontend Asset Bundler (`VITE_*`)
+- **`VITE_APP_NAME`**: Exposes application name to frontend scripts (`"${APP_NAME}"`).
+
+### 📦 12. Backup Configuration Variables
+- **`BACKUP_LOCATION`**: File system path for automated backups (e.g., `/home/m/KantaBackup` or `D:\LaravelBackups`).
+- **`EMAIL_FOR_BACKUP`**: Destination email address for automated backup notification emails.
 
 ---
 
-*Documentation generated for **Kanta Laravel Application**.*
+*Documentation generated for **Kanta Laravel Application & Microservices**.*
