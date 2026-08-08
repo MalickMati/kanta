@@ -113,9 +113,11 @@ class ShowPages extends Controller
         $lastDetail = Detail::latest('id')->first();
 
         $serial = $lastDetail ? $lastDetail->id + 1 : 1;
+        $rates = \App\Models\VehicleRate::orderBy('vehicle_type', 'asc')->get();
 
         return view('pages.first', [
             'serial' => $serial,
+            'rates' => $rates,
         ]);
     }
 
@@ -489,16 +491,52 @@ class ShowPages extends Controller
         $records = $query->select(
             'id',
             'party',
+            'vehicle_number',
+            'vehicle_type',
             'first_weight',
             'second_weight',
             'net_weight',
             'amount',
             'first_date',
-            'second_date'
+            'second_date',
+            'created_by'
         )->orderBy('id', 'asc')->get();
 
+        $userNames = User::pluck('name', 'username')->toArray();
+
+        $totalVehicles = $records->count();
+        $totalEarnings = $records->sum('amount');
+        $operatorSummary = [];
+        $vehicleTypeSummary = [];
+
+        foreach ($records as $r) {
+            $opKey = $r->created_by ?: 'Unknown';
+            if (!isset($operatorSummary[$opKey])) {
+                $operatorSummary[$opKey] = [
+                    'username' => $opKey,
+                    'name' => $userNames[$opKey] ?? $opKey,
+                    'count' => 0,
+                    'earnings' => 0,
+                ];
+            }
+            $operatorSummary[$opKey]['count']++;
+            $operatorSummary[$opKey]['earnings'] += (float)$r->amount;
+
+            $vType = !empty($r->vehicle_type) ? trim($r->vehicle_type) : 'Others';
+            if (!isset($vehicleTypeSummary[$vType])) {
+                $vehicleTypeSummary[$vType] = 0;
+            }
+            $vehicleTypeSummary[$vType]++;
+        }
+
         return response()->json([
-            'records' => $records
+            'records' => $records,
+            'summary' => [
+                'total_vehicles' => $totalVehicles,
+                'total_earnings' => $totalEarnings,
+                'operators' => array_values($operatorSummary),
+                'vehicle_types' => $vehicleTypeSummary,
+            ]
         ]);
     }
 
@@ -532,15 +570,59 @@ class ShowPages extends Controller
         $records = $query->select(
             'id',
             'party',
+            'vehicle_number',
+            'vehicle_type',
             'first_weight',
             'second_weight',
             'net_weight',
             'amount',
             'first_date',
-            'second_date'
+            'second_date',
+            'created_by'
         )->orderBy('id', 'asc')->get();
 
-        return view('partials.report-print', compact('records', 'filter_type'));
+        $userNames = User::pluck('name', 'username')->toArray();
+
+        $totalVehicles = $records->count();
+        $totalEarnings = $records->sum('amount');
+        $operatorSummary = [];
+        $vehicleTypeSummary = [];
+
+        foreach ($records as $r) {
+            $opKey = $r->created_by ?: 'Unknown';
+            if (!isset($operatorSummary[$opKey])) {
+                $operatorSummary[$opKey] = [
+                    'username' => $opKey,
+                    'name' => $userNames[$opKey] ?? $opKey,
+                    'count' => 0,
+                    'earnings' => 0,
+                ];
+            }
+            $operatorSummary[$opKey]['count']++;
+            $operatorSummary[$opKey]['earnings'] += (float)$r->amount;
+
+            $vType = !empty($r->vehicle_type) ? trim($r->vehicle_type) : 'Others';
+            if (!isset($vehicleTypeSummary[$vType])) {
+                $vehicleTypeSummary[$vType] = 0;
+            }
+            $vehicleTypeSummary[$vType]++;
+        }
+
+        $company = Metadata::where('name', 'Company_Name')->first();
+        $address = Metadata::where('name', 'address')->first();
+        $contact = Metadata::where('name', 'Contact_Number')->first();
+
+        return view('partials.report-print', compact(
+            'records',
+            'filter_type',
+            'totalVehicles',
+            'totalEarnings',
+            'operatorSummary',
+            'vehicleTypeSummary',
+            'company',
+            'address',
+            'contact'
+        ));
     }
 
     private function authorizeAdmin()

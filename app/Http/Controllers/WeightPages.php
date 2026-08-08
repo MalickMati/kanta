@@ -109,9 +109,10 @@ class WeightPages extends Controller
         $validator = Validator::make($request->all(), [
             'serial' => 'required|unique:details,id|string',
             'vehicleNumber' => 'required|string|max:15',
+            'vehicleType' => 'nullable|string|max:50',
             'partyName' => 'required|string|max:20',
             'firstWeight' => 'required|string|max:15',
-            'amount' => 'required|string|max:5',
+            'amount' => 'required|string|max:10',
             'description' => 'nullable|string|max:25',
         ], [
             'serial.unique' => 'This is already used serial',
@@ -129,6 +130,7 @@ class WeightPages extends Controller
 
         $record = Detail::create([
             'vehicle_number' => $data['vehicleNumber'],
+            'vehicle_type' => !empty($data['vehicleType']) ? Str::title($data['vehicleType']) : null,
             'party' => Str::title($data['partyName']),
             'first_weight' => $data['firstWeight'],
             'first_date' => $now,
@@ -312,12 +314,13 @@ class WeightPages extends Controller
         $validator = Validator::make($request->all(), [
             'serial' => 'required|exists:details,id',
             'vehicle_number' => 'required|string|max:15',
+            'vehicle_type' => 'nullable|string|max:50',
             'party' => 'required|string|max:20',
             'first_weight' => 'required|string|max:15',
             'second_weight' => 'required|string|max:15',
             'first_time' => 'required|string|max:19',
             'second_time' => 'required|string|max:19',
-            'amount' => 'required|string|max:5',
+            'amount' => 'required|string|max:10',
             'description' => 'nullable|string|max:25',
         ]);
 
@@ -341,6 +344,7 @@ class WeightPages extends Controller
 
         $record->update([
             'vehicle_number' => $data['vehicle_number'],
+            'vehicle_type' => !empty($data['vehicle_type']) ? Str::title($data['vehicle_type']) : null,
             'party' => Str::title($data['party']),
             'first_weight' => $data['first_weight'],
             'second_weight' => $data['second_weight'],

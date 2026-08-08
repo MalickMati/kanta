@@ -11,13 +11,8 @@ class AdminWithDetailsSeeder extends Seeder
 {
     public function run()
     {
-        $faker = Faker::create();
-
-        // Create one admin user
-        $adminUsername = 'Malick';
-
         DB::table('users')->insert([
-            'username' => $adminUsername,
+            'username' => 'Malick',
             'password' => Hash::make('password'),
             'role' => 'admin',
             'name' => 'Mati ur Rehman',

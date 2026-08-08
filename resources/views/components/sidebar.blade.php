@@ -368,6 +368,10 @@
         @if (Auth::user()->role === 'admin')
             <div class="nav-section">
                 <div class="nav-title">Settings & Backup</div>
+                <a href="{{ route('ratelist.page') }}" class="nav-item {{ request()->routeIs('ratelist.page') ? 'active' : '' }}">
+                    <i class="svg-icon"><x-icons name="balance-scale" /></i>
+                    <span class="nav-text">Rate List</span>
+                </a>
                 <a href="{{ route('settings.page') }}" class="nav-item {{ request()->routeIs('settings.page') ? 'active' : '' }}">
                     <i class="svg-icon"><x-icons name="settings" /></i>
                     <span class="nav-text">Settings</span>

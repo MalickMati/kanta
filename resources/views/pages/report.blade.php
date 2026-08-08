@@ -212,6 +212,26 @@
       </div>
     </div>
 
+    <!-- Summary Cards (shown on preview) -->
+    <div id="summaryCardsContainer" class="hidden" style="margin-bottom: 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+      <div style="background: var(--bg-primary); padding: 1.25rem; border-radius: var(--radius); border: 1px solid var(--border);">
+        <div style="font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Total Vehicles</div>
+        <div id="cardTotalVehicles" style="font-size: 1.8rem; font-weight: 700; color: var(--accent); margin-top: 0.25rem;">0</div>
+      </div>
+      <div style="background: var(--bg-primary); padding: 1.25rem; border-radius: var(--radius); border: 1px solid var(--border);">
+        <div style="font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">Total Earnings</div>
+        <div id="cardTotalEarnings" style="font-size: 1.8rem; font-weight: 700; color: var(--success); margin-top: 0.25rem;">0 RS</div>
+      </div>
+      <div style="background: var(--bg-primary); padding: 1.25rem; border-radius: var(--radius); border: 1px solid var(--border); grid-column: span 2;">
+        <div style="font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 0.5rem;">Operator Breakdown</div>
+        <div id="cardOperatorsList" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-primary);">—</div>
+      </div>
+      <div style="background: var(--bg-primary); padding: 1.25rem; border-radius: var(--radius); border: 1px solid var(--border); grid-column: span 2;">
+        <div style="font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 0.5rem;">Vehicle Breakdown</div>
+        <div id="cardVehiclesList" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-primary);">—</div>
+      </div>
+    </div>
+
     <!-- Records Table -->
     <div class="table-wrapper">
       <table>
@@ -219,6 +239,8 @@
           <tr>
             <th>Serial #</th>
             <th>Party Name</th>
+            <th>Vehicle #</th>
+            <th>Vehicle Type</th>
             <th style="text-align: right;">First Weight</th>
             <th style="text-align: right;">Second Weight</th>
             <th style="text-align: right;">Net Weight</th>
@@ -227,7 +249,7 @@
         </thead>
         <tbody id="recordsTable">
           <tr>
-            <td colspan="6" style="text-align: center; padding: 2rem;">Select criteria and click "Show Preview" to view records.</td>
+            <td colspan="8" style="text-align: center; padding: 2rem;">Select criteria and click "Show Preview" to view records.</td>
           </tr>
         </tbody>
       </table>
@@ -250,6 +272,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const btnPreview = document.getElementById('btnPreview');
   const btnPrint = document.getElementById('btnPrint');
   const recordsTable = document.getElementById('recordsTable');
+
+  const summaryCardsContainer = document.getElementById('summaryCardsContainer');
+  const cardTotalVehicles = document.getElementById('cardTotalVehicles');
+  const cardTotalEarnings = document.getElementById('cardTotalEarnings');
+  const cardOperatorsList = document.getElementById('cardOperatorsList');
+  const cardVehiclesList = document.getElementById('cardVehiclesList');
 
   // Set default dates
   const today = new Date().toISOString().split('T')[0];
@@ -292,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   btnPreview.addEventListener('click', async () => {
     const params = getFilterParams();
-    recordsTable.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">Loading...</td></tr>';
+    recordsTable.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem;">Loading...</td></tr>';
     
     try {
       const res = await fetch(`{{ route('report.fetch') }}?` + params.toString());
@@ -301,27 +329,51 @@ document.addEventListener('DOMContentLoaded', function () {
       const data = await res.json();
       
       if (!data.records || data.records.length === 0) {
-        recordsTable.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">No records found for the selected criteria.</td></tr>';
+        recordsTable.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem;">No records found for the selected criteria.</td></tr>';
+        summaryCardsContainer.classList.add('hidden');
         return;
       }
       
+      // Update Summary Cards
+      if (data.summary) {
+        cardTotalVehicles.textContent = formatNumber(data.summary.total_vehicles);
+        cardTotalEarnings.textContent = `${formatNumber(data.summary.total_earnings)} RS`;
+
+        // Operators breakdown
+        const opsText = data.summary.operators.map(op => 
+          `<div><strong>${op.name} (${op.username}):</strong> ${op.count} vehicles — <strong>Earnings:</strong> ${formatNumber(op.earnings)} RS</div>`
+        ).join('');
+        cardOperatorsList.innerHTML = opsText || 'None';
+
+        // Vehicles breakdown
+        const vText = Object.entries(data.summary.vehicle_types).map(([vType, count]) => 
+          `<span style="display: inline-block; background: var(--bg-secondary); padding: 0.25rem 0.6rem; border-radius: 4px; margin-right: 0.5rem; margin-bottom: 0.3rem;"><strong>${vType}:</strong> ${count}</span>`
+        ).join('');
+        cardVehiclesList.innerHTML = vText || 'None';
+
+        summaryCardsContainer.classList.remove('hidden');
+      }
+
       recordsTable.innerHTML = '';
       data.records.forEach(r => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${r.id}</td>
           <td>${r.party ?? '-'}</td>
+          <td>${r.vehicle_number ?? '-'}</td>
+          <td>${r.vehicle_type ?? 'Others'}</td>
           <td style="text-align: right;">${formatNumber(r.first_weight)} kg</td>
           <td style="text-align: right;">${formatNumber(r.second_weight)} kg</td>
           <td style="text-align: right;">${formatNumber(r.net_weight)} kg</td>
-          <td style="text-align: right;">${formatNumber(r.amount)} Rs</td>
+          <td style="text-align: right;">${formatNumber(r.amount)} RS</td>
         `;
         recordsTable.appendChild(tr);
       });
       
     } catch (err) {
       console.error(err);
-      recordsTable.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: red;">Error fetching records.</td></tr>';
+      recordsTable.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem; color: red;">Error fetching records.</td></tr>';
+      summaryCardsContainer.classList.add('hidden');
     }
   });
 

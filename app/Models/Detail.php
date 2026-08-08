@@ -12,6 +12,7 @@ class Detail extends Model
 
     protected $fillable = [
         'vehicle_number',
+        'vehicle_type',
         'party',
         'description',
         'first_weight',

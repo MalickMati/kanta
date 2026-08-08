@@ -288,6 +288,18 @@
           </div>
 
           <div class="form-group">
+            <label for="vehicleType">Vehicle Type</label>
+            <input type="text" id="vehicleType" name="vehicleType" placeholder="Select or type (e.g. Truck, Rickshaw)" list="vehicle_rates_list">
+            <datalist id="vehicle_rates_list">
+              @if(isset($rates))
+                @foreach($rates as $r)
+                  <option value="{{ $r->vehicle_type }}">{{ $r->vehicle_type }} — {{ number_format($r->amount, 0) }} RS</option>
+                @endforeach
+              @endif
+            </datalist>
+          </div>
+
+          <div class="form-group">
             <label for="amount" class="required">Amount (PKR)</label>
             <input type="number" id="amount" name="amount" placeholder="0" min="0" step="0.01" required>
           </div>
@@ -335,6 +347,27 @@
       const firstWeightForm = document.getElementById('firstWeightForm');
       const cancelBtn = document.getElementById('cancelBtn');
       const sub_btn = document.getElementById('sub_btn');
+
+      const vehicleTypeInput = document.getElementById('vehicleType');
+      const amountInput = document.getElementById('amount');
+
+      // Vehicle rates lookup map
+      const ratesMap = {
+        @if(isset($rates))
+          @foreach($rates as $r)
+            "{{ strtolower(trim($r->vehicle_type)) }}": {{ $r->amount }},
+          @endforeach
+        @endif
+      };
+
+      if (vehicleTypeInput && amountInput) {
+        vehicleTypeInput.addEventListener('input', function () {
+          const val = this.value.trim().toLowerCase();
+          if (ratesMap[val] !== undefined) {
+            amountInput.value = ratesMap[val];
+          }
+        });
+      }
 
       // Get all form inputs for Enter key navigation
       const formInputs = Array.from(firstWeightForm.querySelectorAll('input:not([readonly]):not([type="button"]):not([type="submit"])'));

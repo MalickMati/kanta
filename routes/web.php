@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ShowPages;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WeightPages;
+use App\Http\Controllers\VehicleRateController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -47,6 +48,13 @@ Route::get('/records/fetch',   [ShowPages::class, 'fetchRecords'])->name('record
 Route::get('/reports', [ShowPages::class, 'reportPage'])->name('report.page');
 Route::get('/reports/fetch', [ShowPages::class, 'fetchReport'])->name('report.fetch');
 Route::get('/reports/print', [ShowPages::class, 'printReport'])->name('report.print');
+
+// Rate List Routes
+Route::get('/rates', [VehicleRateController::class, 'index'])->name('ratelist.page');
+Route::get('/rates/fetch', [VehicleRateController::class, 'getRates'])->name('ratelist.fetch');
+Route::post('/rates', [VehicleRateController::class, 'store'])->name('ratelist.store');
+Route::put('/rates/{id}', [VehicleRateController::class, 'update'])->name('ratelist.update');
+Route::delete('/rates/{id}', [VehicleRateController::class, 'destroy'])->name('ratelist.destroy');
 
 Route::post('/get/record', [WeightPages::class, 'fetchRecord'])->name('get.record');
 

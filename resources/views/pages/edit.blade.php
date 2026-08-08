@@ -364,6 +364,18 @@
           </div>
 
           <div class="form-group">
+            <label for="vehicle_type">Vehicle Type</label>
+            <input type="text" id="vehicle_type" name="vehicle_type" placeholder="Select or type vehicle type" list="vehicle_rates_list">
+            <datalist id="vehicle_rates_list">
+              <option value="Rickshaw">Rickshaw</option>
+              <option value="Truck">Truck</option>
+              <option value="Tractor">Tractor</option>
+              <option value="Car / Jeep">Car / Jeep</option>
+              <option value="Dumper">Dumper</option>
+            </datalist>
+          </div>
+
+          <div class="form-group">
             <label for="party" class="required">Party Name</label>
             <input type="text" id="party" name="party" placeholder="Ali Traders" maxlength="15" required>
           </div>
@@ -496,6 +508,7 @@
         serialHidden.value = record.id;
         serialDisplay.value = record.id;
         vehicle_number.value = record.vehicle_number ?? '';
+        document.getElementById('vehicle_type').value = record.vehicle_type ?? '';
         party.value = record.party ?? '';
         amount.value = record.amount ?? '';
         first_weight.value = cleanNumber(record.first_weight);

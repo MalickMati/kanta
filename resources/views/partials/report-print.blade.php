@@ -3,247 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Print Report - {{ config('app.name') }}</title>
+    <title>Print Summary Report - {{ config('app.name') }}</title>
     <style>
-        :root {
-            --font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            --text-main: #111827;
-            --text-muted: #4b5563;
-            --border-color: #e5e7eb;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', Arial, sans-serif;
         }
 
         body {
-            font-family: var(--font-family);
-            color: var(--text-main);
-            background-color: #f3f4f6;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .no-print {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #fff;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            max-width: 210mm;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .btn-print {
-            background-color: #4f46e5;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .btn-print:hover {
-            background-color: #4338ca;
-        }
-
-        /* A4 Page Setup */
-        .page-container {
             background: white;
-            width: 210mm;
-            min-height: 297mm;
-            margin: 0 auto;
-            padding: 15mm;
-            box-sizing: border-box;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 0;
         }
 
-        .report-header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 15px;
-        }
-
-        .report-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin: 0 0 5px 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .report-subtitle {
-            font-size: 14px;
-            color: var(--text-muted);
+        @page {
+            size: 210mm 148mm; /* Receipt paper print size matching receipt layout */
             margin: 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-            table-layout: fixed; /* Ensures it fits exactly in width */
-        }
-
-        th, td {
-            border: 1px solid var(--border-color);
-            padding: 8px 10px;
-            word-wrap: break-word;
-        }
-
-        th {
-            background-color: #f9fafb;
-            font-weight: 600;
-            text-align: left;
-            text-transform: uppercase;
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        /* Repeating headers on new pages */
-        thead {
-            display: table-header-group;
-        }
-
-        tfoot {
-            display: table-footer-group;
-        }
-
-        tr {
-            page-break-inside: avoid;
-        }
-
-        /* Set column widths so they don't overflow */
-        th.col-serial { width: 10%; }
-        th.col-party { width: 30%; }
-        th.col-weight { width: 15%; }
-        th.col-amount { width: 15%; }
-
-        .summary-row {
-            font-weight: 700;
-            background-color: #f9fafb;
         }
 
         @media print {
-            @page {
-                size: A4 portrait;
-                margin: 10mm;
-            }
             body {
-                background: none;
-                padding: 0;
                 margin: 0;
+                padding: 0;
             }
             .no-print {
                 display: none !important;
             }
-            .page-container {
-                box-shadow: none;
-                margin: 0;
-                padding: 0;
-                width: 100%;
-                min-height: auto;
-                border-radius: 0;
+            .receipt-card {
+                border: none !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                padding: 10px 15px !important;
             }
+        }
+
+        .no-print {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: #fff;
+            padding: 10px 15px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .btn-print {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-print:hover {
+            background-color: #1d4ed8;
+        }
+
+        .receipt-card {
+            width: 210mm;
+            min-height: 148mm;
+            background: white;
+            padding: 15px 20px;
+            border: 1px dashed #bbb;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #000;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #000;
+        }
+
+        .header h2 {
+            font-size: 11px;
+            color: #444;
+            font-weight: normal;
+            margin-top: 2px;
+        }
+
+        .report-subtitle {
+            font-size: 11px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-top: 4px;
+        }
+
+        .total-vehicles-bar {
+            background: #f1f5f9;
+            border: 1.5px solid #000;
+            border-radius: 6px;
+            padding: 6px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .summary-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .section-box {
+            border: 1px solid #000;
+            border-radius: 6px;
+            padding: 8px 10px;
+            background: #fafafa;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            border-bottom: 1px solid #000;
+            padding-bottom: 3px;
+            margin-bottom: 6px;
+            color: #000;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            padding: 3px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-row strong {
+            color: #000;
+        }
+
+        .earnings-box {
+            grid-column: span 2;
+            background: #f0fdf4;
+            border-color: #16a34a;
+        }
+
+        .grand-total-row {
+            border-top: 1.5px solid #16a34a;
+            margin-top: 4px;
+            padding-top: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #15803d;
         }
     </style>
 </head>
 <body>
     <div class="no-print">
-        <div>
-            <strong>Report Preview</strong> ({{ $records->count() }} records found)
-        </div>
-        <button class="btn-print" onclick="window.print()">Print Document</button>
+        <button class="btn-print" onclick="window.print()">Print Summary</button>
     </div>
 
-    <div class="page-container">
-        <div class="report-header">
-            <h1 class="report-title">{{ config('app.name') }} - Records Report</h1>
-            <p class="report-subtitle">
-                @if(request('filter_type') == 'date')
-                    Date Range: {{ request('from_date', 'Start') }} to {{ request('to_date') ?: \Carbon\Carbon::today()->toDateString() }}
+    <div class="receipt-card">
+        <!-- Header -->
+        <div class="header">
+            <h1>{{ $company->value ?? config('app.name') }}</h1>
+            <h2>
+                @if(isset($address) && $address->value) {{ $address->value }} @endif
+                @if(isset($contact) && $contact->value) | Contact: {{ $contact->value }} @endif
+            </h2>
+            <div class="report-subtitle">
+                SUMMARY REPORT 
+                (@if(request('filter_type') == 'date')
+                    Date: {{ request('from_date', 'Start') }} to {{ request('to_date') ?: \Carbon\Carbon::today()->toDateString() }}
                 @elseif(request('filter_type') == 'serial')
-                    Serial Range: {{ request('from_serial', '1') }} to {{ request('to_serial', 'Latest') }}
+                    Serial: #{{ request('from_serial', '1') }} to #{{ request('to_serial', 'Latest') }}
                 @else
                     All Records
-                @endif
-            </p>
+                @endif)
+            </div>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th class="col-serial text-center">Serial #</th>
-                    <th class="col-party">Party Name</th>
-                    <th class="col-weight text-right">First Wt.</th>
-                    <th class="col-weight text-right">Second Wt.</th>
-                    <th class="col-weight text-right">Net Wt.</th>
-                    <th class="col-amount text-right">Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php
-                    $totalFirst = 0;
-                    $totalSecond = 0;
-                    $totalNet = 0;
-                    $totalAmount = 0;
-                @endphp
+        <!-- Total Vehicles Bar -->
+        <div class="total-vehicles-bar">
+            <span>Total Vehicles Weighted:</span>
+            <span>{{ number_format($totalVehicles) }}</span>
+        </div>
 
-                @forelse($records as $r)
-                    @php
-                        $totalFirst += $r->first_weight;
-                        $totalSecond += $r->second_weight;
-                        $totalNet += $r->net_weight;
-                        $totalAmount += $r->amount;
-                    @endphp
-                    <tr>
-                        <td class="text-center">{{ $r->id }}</td>
-                        <td>{{ $r->party ?? '-' }}</td>
-                        <td class="text-right">{{ number_format($r->first_weight) }}</td>
-                        <td class="text-right">{{ number_format($r->second_weight) }}</td>
-                        <td class="text-right">{{ number_format($r->net_weight) }}</td>
-                        <td class="text-right">{{ number_format($r->amount) }}</td>
-                    </tr>
+        <!-- Summary Grid -->
+        <div class="summary-container">
+            <!-- Operators Breakdown -->
+            <div class="section-box">
+                <div class="section-title">Vehicles per Operator</div>
+                @forelse($operatorSummary as $op)
+                    <div class="stat-row">
+                        <span>{{ $op['name'] }} ({{ $op['username'] }}):</span>
+                        <strong>{{ number_format($op['count']) }}</strong>
+                    </div>
                 @empty
-                    <tr>
-                        <td colspan="6" class="text-center">No records found for the selected criteria.</td>
-                    </tr>
+                    <div class="stat-row"><span>No operators found</span></div>
                 @endforelse
-            </tbody>
-            @if($records->count() > 0)
-            <tfoot>
-                <tr class="summary-row">
-                    <td colspan="2" class="text-right">TOTALS:</td>
-                    <td class="text-right">{{ number_format($totalFirst) }}</td>
-                    <td class="text-right">{{ number_format($totalSecond) }}</td>
-                    <td class="text-right">{{ number_format($totalNet) }}</td>
-                    <td class="text-right">{{ number_format($totalAmount) }}</td>
-                </tr>
-            </tfoot>
-            @endif
-        </table>
+            </div>
+
+            <!-- Vehicles Breakdown -->
+            <div class="section-box">
+                <div class="section-title">Vehicle Types Breakdown</div>
+                @forelse($vehicleTypeSummary as $vType => $count)
+                    <div class="stat-row">
+                        <span>{{ $vType }}:</span>
+                        <strong>{{ number_format($count) }}</strong>
+                    </div>
+                @empty
+                    <div class="stat-row"><span>No vehicles found</span></div>
+                @endforelse
+            </div>
+
+            <!-- Earnings Breakdown -->
+            <div class="section-box earnings-box">
+                <div class="section-title" style="border-color: #16a34a; color: #15803d;">Earnings Breakdown</div>
+                @forelse($operatorSummary as $op)
+                    <div class="stat-row">
+                        <span>Earnings ({{ $op['name'] }}):</span>
+                        <strong>{{ number_format($op['earnings']) }} RS</strong>
+                    </div>
+                @empty
+                    <div class="stat-row"><span>No earnings recorded</span></div>
+                @endforelse
+
+                <div class="stat-row grand-total-row">
+                    <span>Total Earnings:</span>
+                    <span>{{ number_format($totalEarnings) }} RS</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Auto-print on load if needed, user requested when click print details it prints.
-        // It's usually better UX to open the tab and immediately pop up print dialog.
         window.onload = function() {
             setTimeout(() => {
                 window.print();
-            }, 500);
+            }, 300);
         };
+        window.addEventListener("afterprint", function() {
+            window.history.back();
+        });
     </script>
 </body>
 </html>
