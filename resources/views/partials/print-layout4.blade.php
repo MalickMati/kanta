@@ -364,15 +364,15 @@
                     </div>
                 </div>
                 <div class="srow srow2">
-                    <input type="text" disabled id="pfweight" value="{{ $record->first_weight }}">
+                    <input type="text" disabled id="pfweight" value="{{ $record->first_weight }} KG">
                     <p>1st Weight</p>
                 </div>
                 <div class="srow srow3">
-                    <input type="text" disabled id="psweight" value="{{ $record->second_weight }}">
+                    <input type="text" disabled id="psweight" value="{{ $record->second_weight }} KG">
                     <p>2nd Weight</p>
                 </div>
                 <div class="srow srow4">
-                    <input type="text" disabled id="pnetweight" value="{{ $record->net_weight }}">
+                    <input type="text" disabled id="pnetweight" value="{{ $record->net_weight }} KG">
                     <p>Net Weight</p>
                 </div>
                 <!-- <div class="srow srow5">Received With Thanks</div> -->
