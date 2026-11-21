@@ -300,8 +300,8 @@
 
 <body>
     <div id="printing">
-        <h1>{{ $company->value }}</h1>
-        <h2>{{ $address->value }}</h2>
+        <h1>AL HAMAD COMPUTERIZED KANTA</h1> 
+        <h2>AL HAMD RICE MILL HAFIZABAD ROAD, VANIKE TARAR</h2>
         <div class="data">
             <div class="fside">
                 <div class="frow frow1">
@@ -357,9 +357,7 @@
             <div class="sside">
                 <div class="srow srow1">
                     <div class="inrow1">
-                        @if ($contact != null)
-                            <strong>Contact No.</strong> {{ $contact->value }}
-                        @endif
+                        <strong>Contact No.</strong> 03120408175
                     </div>
                     <div class="inrow2">
 

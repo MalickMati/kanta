@@ -418,6 +418,36 @@
 
     </div>
 
+    <div class="card" style="margin-top: 1.5rem;">
+        <h3 class="card-title">Default Print Layout</h3>
+        <p class="muted" style="text-align: center; margin-bottom: 1rem;">Choose the default print design for receipts and weight slips (great for color printers).</p>
+        <div class="form-grid" style="grid-template-columns: 1fr auto; align-items: end; gap: 1rem;">
+            <div class="form-row">
+                <label for="settingsLayoutSelect">Select Layout</label>
+                <select id="settingsLayoutSelect" style="width: 100%; padding: 0.8rem 0.9rem; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-primary); color: var(--text-primary); font-size: 0.95rem;">
+                    <option value="layout1">Layout 1 (Classic Table)</option>
+                    <option value="layout2">Layout 2 (Modern Blue - Color)</option>
+                    <option value="layout3">Layout 3 (Clean Commercial - Color)</option>
+                    <option value="layout4">Layout 4 (Thermal / Slip Background)</option>
+                    <option value="layout5">Layout 5 (Elegant Serif)</option>
+                    <option value="layout6">Layout 6 (Dark Header)</option>
+                    <option value="layout7">Layout 7 (Two-Tone Navy - Color)</option>
+                    <option value="layout8">Layout 8 (Dot Matrix / Monospace)</option>
+                    <option value="layout9">Layout 9 (Minimalist)</option>
+                    <option value="layout10">Layout 10 (Rounded Cards - Slate Blue)</option>
+                    <option value="layout11">Layout 11 (Large Typography)</option>
+                    <option value="layout12">Layout 12 (Zebra Striped - Color)</option>
+                    <option value="layout13">Layout 13 (Right Aligned)</option>
+                    <option value="layout14">Layout 14 (Boxed Wireframe)</option>
+                </select>
+            </div>
+            <div class="actions" style="margin-top: 0;">
+                <button type="button" class="btn btn-ghost" id="previewSettingsLayoutBtn">Preview</button>
+                <button type="button" class="btn btn-primary" id="saveSettingsLayoutBtn">Save Default</button>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('script')
@@ -502,5 +532,25 @@
                 contactnumbtn.disabled = false;
             }
         });
+
+        // Default Print Layout Settings
+        const STORAGE_KEY = 'kanta_print_layout';
+        const settingsLayoutSelect = document.getElementById('settingsLayoutSelect');
+        const saveSettingsLayoutBtn = document.getElementById('saveSettingsLayoutBtn');
+        const previewSettingsLayoutBtn = document.getElementById('previewSettingsLayoutBtn');
+
+        if (settingsLayoutSelect) {
+            settingsLayoutSelect.value = localStorage.getItem(STORAGE_KEY) || 'layout3';
+
+            saveSettingsLayoutBtn.addEventListener('click', () => {
+                localStorage.setItem(STORAGE_KEY, settingsLayoutSelect.value);
+                const layoutName = settingsLayoutSelect.options[settingsLayoutSelect.selectedIndex].text;
+                showToast('Default layout updated to ' + layoutName, 'success');
+            });
+
+            previewSettingsLayoutBtn.addEventListener('click', () => {
+                window.open('{{ route('print.preview') }}?layout=' + settingsLayoutSelect.value, '_blank');
+            });
+        }
     </script>
 @endsection

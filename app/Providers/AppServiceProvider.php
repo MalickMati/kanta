@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $host = Request::getHost();
 
-        if ($host === 'kanta.malick.site') {
+        if ($host === 'kanta.malickmati.site') {
             URL::forceScheme('https');
         }
     }

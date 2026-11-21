@@ -20,7 +20,20 @@ const log = (message, type = 'INFO') => {
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
-app.post('/print', async (req, res) => {
+// Health check endpoint
+app.get('/', (req, res) => {
+    res.json({ status: 'ok', service: 'Printer Microservice' });
+});
+
+let printQueue = Promise.resolve();
+
+app.post('/print', (req, res) => {
+    printQueue = printQueue.then(() => handlePrint(req, res)).catch((err) => {
+        log(`Queue unhandled error: ${err.message}`, 'ERROR');
+    });
+});
+
+const handlePrint = async (req, res) => {
     const { html, quantity } = req.body;
 
     if (!html) {
@@ -39,7 +52,12 @@ app.post('/print', async (req, res) => {
         const executablePath = '/usr/bin/google-chrome';
         const launchOptions = {
             headless: 'new',
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu'
+            ]
         };
 
         if (fs.existsSync(executablePath)) {
@@ -53,8 +71,14 @@ app.post('/print', async (req, res) => {
         
         const page = await browser.newPage();
         
-        // Set content and wait for network idle to ensure everything is loaded
-        await page.setContent(html, { waitUntil: 'networkidle0' });
+        // Disable JavaScript to prevent any embedded window.print() or scripts from interfering with PDF generation
+        await page.setJavaScriptEnabled(false);
+
+        // Strip any script tags from HTML as a safeguard
+        const cleanHtml = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+
+        // Set content and wait for load
+        await page.setContent(cleanHtml, { waitUntil: 'load' });
 
         // Emulate print media type
         await page.emulateMediaType('print');
@@ -68,6 +92,7 @@ app.post('/print', async (req, res) => {
         });
 
         await browser.close();
+        browser = null;
         log(`Generated PDF at ${tempPdfPath}`);
 
         // Print using lp command (Linux)
@@ -94,7 +119,11 @@ app.post('/print', async (req, res) => {
         log(`Exception in /print: ${error.stack}`, 'ERROR');
         
         if (browser) {
-            await browser.close();
+            try {
+                await browser.close();
+            } catch (closeErr) {
+                // ignore
+            }
         }
         
         if (fs.existsSync(tempPdfPath)) {
@@ -103,9 +132,9 @@ app.post('/print', async (req, res) => {
 
         res.status(500).json({ error: 'Internal server error', details: error.message });
     }
-});
+};
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
     log(`Printer Microservice is running on http://localhost:${port}`);
     log('Ensure you have a default system printer configured (e.g. via CUPS on Linux).');
 });

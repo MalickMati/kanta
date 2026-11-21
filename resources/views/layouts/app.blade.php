@@ -141,6 +141,28 @@
         <label for="printCopies">How many copies do you want to print?</label>
         <input type="number" id="printCopies" value="1" min="1" max="10">
       </div>
+      <div style="margin-bottom: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <label for="printLayoutSelect" style="margin-bottom: 0;">Print Design Layout</label>
+          <a id="previewLayoutLink" href="{{ route('print.preview') }}?layout=layout3" target="_blank" style="font-size: 0.82rem; color: var(--accent); text-decoration: underline;">Preview Layout</a>
+        </div>
+        <select id="printLayoutSelect" style="width: 100%; padding: 0.55rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-primary); color: var(--text-primary); font-size: 0.95rem;">
+          <option value="layout1">Layout 1 (Classic Table)</option>
+          <option value="layout2">Layout 2 (Modern Blue - Color)</option>
+          <option value="layout3">Layout 3 (Clean Commercial - Color)</option>
+          <option value="layout4">Layout 4 (Thermal / Slip Background)</option>
+          <option value="layout5">Layout 5 (Elegant Serif)</option>
+          <option value="layout6">Layout 6 (Dark Header)</option>
+          <option value="layout7">Layout 7 (Two-Tone Navy - Color)</option>
+          <option value="layout8">Layout 8 (Dot Matrix / Monospace)</option>
+          <option value="layout9">Layout 9 (Minimalist)</option>
+          <option value="layout10">Layout 10 (Rounded Cards - Slate Blue)</option>
+          <option value="layout11">Layout 11 (Large Typography)</option>
+          <option value="layout12">Layout 12 (Zebra Striped - Color)</option>
+          <option value="layout13">Layout 13 (Right Aligned)</option>
+          <option value="layout14">Layout 14 (Boxed Wireframe)</option>
+        </select>
+      </div>
       <div class="form-actions">
         @if (Auth::user()->role == 'admin')
           <button type="button" class="btn btn-secondary" id="savePdfBtn" style="background: var(--success); color: white; margin-right: auto;">Save as PDF</button>
@@ -156,9 +178,31 @@
       return new Promise((resolve) => {
         const modal = document.getElementById('silentPrintModal');
         const copiesInput = document.getElementById('printCopies');
+        const layoutSelect = document.getElementById('printLayoutSelect');
+        const previewLayoutLink = document.getElementById('previewLayoutLink');
         const confirmBtn = document.getElementById('confirmPrintBtn');
         const cancelBtn = document.getElementById('cancelPrintBtn');
         const savePdfBtn = document.getElementById('savePdfBtn');
+
+        const savedLayout = localStorage.getItem('kanta_print_layout') || 'layout3';
+        if (layoutSelect) {
+          layoutSelect.value = savedLayout;
+        }
+        if (previewLayoutLink && layoutSelect) {
+          previewLayoutLink.href = '{{ route("print.preview") }}?layout=' + layoutSelect.value;
+        }
+
+        const handleLayoutChange = () => {
+          if (layoutSelect) {
+            localStorage.setItem('kanta_print_layout', layoutSelect.value);
+            if (previewLayoutLink) {
+              previewLayoutLink.href = '{{ route("print.preview") }}?layout=' + layoutSelect.value;
+            }
+          }
+        };
+        if (layoutSelect) {
+          layoutSelect.addEventListener('change', handleLayoutChange);
+        }
 
         modal.style.display = 'flex';
         copiesInput.value = '1';
@@ -166,15 +210,16 @@
 
         const handleConfirm = async () => {
           const copies = parseInt(copiesInput.value) || 1;
+          const selectedLayout = layoutSelect ? layoutSelect.value : (localStorage.getItem('kanta_print_layout') || 'layout3');
+          localStorage.setItem('kanta_print_layout', selectedLayout);
           cleanup();
           
           try {
-            // Force layout4 as per requirements
             const finalUrl = new URL(redirectUrl);
-            finalUrl.searchParams.set('layout', 'layout4');
+            finalUrl.searchParams.set('layout', selectedLayout);
             
             if (typeof showToast === 'function') {
-                showToast('Fetching print layout...', 'success');
+                showToast('Fetching print layout (' + selectedLayout + ')...', 'success');
             }
             
             const response = await fetch(finalUrl.toString());
@@ -210,9 +255,11 @@
         };
 
         const handleSavePdf = () => {
+          const selectedLayout = layoutSelect ? layoutSelect.value : (localStorage.getItem('kanta_print_layout') || 'layout3');
+          localStorage.setItem('kanta_print_layout', selectedLayout);
           cleanup();
           const finalUrl = new URL(redirectUrl);
-          finalUrl.searchParams.set('layout', 'layout4');
+          finalUrl.searchParams.set('layout', selectedLayout);
           const printWindow = window.open(finalUrl.toString(), '_blank');
           if (!printWindow && typeof showToast === 'function') {
             showToast('Please allow popups to save as PDF', 'error');
@@ -222,9 +269,12 @@
 
         const cleanup = () => {
           modal.style.display = 'none';
+          confirmBtn.disabled = false;
           confirmBtn.removeEventListener('click', handleConfirm);
           cancelBtn.removeEventListener('click', handleCancel);
           if (savePdfBtn) savePdfBtn.removeEventListener('click', handleSavePdf);
+          if (layoutSelect) layoutSelect.removeEventListener('change', handleLayoutChange);
+          copiesInput.removeEventListener('keydown', handleKeydown);
         };
 
         // Also allow Enter to confirm

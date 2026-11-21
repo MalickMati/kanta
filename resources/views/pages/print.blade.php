@@ -600,7 +600,7 @@
               });
             } else {
               setTimeout(() => {
-                const layout = 'layout4';
+                const layout = localStorage.getItem('kanta_print_layout') || 'layout3';
                 const redirectUrl = new URL(res.redirect);
                 redirectUrl.searchParams.append('layout', layout);
                 location.href = redirectUrl.toString();
