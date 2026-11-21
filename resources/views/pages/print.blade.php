@@ -600,10 +600,7 @@
               });
             } else {
               setTimeout(() => {
-                const layout = localStorage.getItem('kanta_print_layout') || 'layout3';
-                const redirectUrl = new URL(res.redirect);
-                redirectUrl.searchParams.append('layout', layout);
-                location.href = redirectUrl.toString();
+                location.href = res.redirect;
                 printBtn.disabled = false;
                 printBtn.classList.remove('loading');
               }, 450);

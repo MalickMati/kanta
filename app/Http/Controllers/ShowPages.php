@@ -149,7 +149,9 @@ class ShowPages extends Controller
             return redirect()->route('print.record')->with('error', 'Please send the serial to that page');
         }
 
-        $layoutKey = request()->query('layout', 'layout1');
+        $defaultLayoutMeta = Metadata::where('name', 'default_print_layout')->first();
+        $defaultLayout = $defaultLayoutMeta ? $defaultLayoutMeta->value : 'layout4';
+        $layoutKey = request()->query('layout', $defaultLayout);
 
         // Map layout key to blade file names
         $layoutMap = [
@@ -247,7 +249,11 @@ class ShowPages extends Controller
 
         $isPreview = true;
 
-        return view($viewName, compact('record', 'user', 'qrCode', 'isPreview'));
+        $address = Metadata::where('name', 'Address')->first();
+        $company = Metadata::where('name', 'Company_Name')->first();
+        $contact = Metadata::where('name', '=', 'Contact_Number')->first();
+
+        return view($viewName, compact('record', 'user', 'qrCode', 'isPreview', 'address', 'company', 'contact'));
     }
 
     public function showSettings()
@@ -259,8 +265,9 @@ class ShowPages extends Controller
         $address = Metadata::where('name', '=', 'address')->firstOrFail();
         $company = Metadata::where('name', '=', 'Company_Name')->firstOrFail();
         $contact = Metadata::where('name', '=', 'Contact_Number')->first();
+        $defaultLayout = Metadata::where('name', 'default_print_layout')->first();
 
-        return view('pages.settings', compact('address', 'company', 'contact'));
+        return view('pages.settings', compact('address', 'company', 'contact', 'defaultLayout'));
     }
 
     public function addnewuser()
@@ -879,6 +886,47 @@ class ShowPages extends Controller
                 ]);
             }
         }
+    }
+
+    public function layoutupdate(Request $request)
+    {
+        if(!Auth::check() || Auth::user()->role != 'admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not allowed to perform this operation!'
+            ], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'layout' => 'required|string',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ]);
+        }
+
+        $layout = $request->input('layout');
+        $record = Metadata::where('name', 'default_print_layout')->first();
+
+        if(!$record) {
+            Metadata::create([
+                'name' => 'default_print_layout',
+                'value' => $layout,
+            ]);
+        } else {
+            $record->value = $layout;
+            $record->save();
+        }
+
+        Log::info("Default print layout was updated to $layout by " . Auth::user()->username);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Default print layout updated successfully',
+        ]);
     }
 
     public function showScaleMonitor()

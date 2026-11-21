@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Al Hammad Computerized Kanta | Vanike Tarar</title>
+    <title>{{ $company->value ?? 'Al Hammad Computerized Kanta' }} | {{ $address->value ?? 'Vanike Tarar' }}</title>
     <style>
         * {
             margin: 0px;
@@ -300,8 +300,8 @@
 
 <body>
     <div id="printing">
-        <h1>AL HAMAD COMPUTERIZED KANTA</h1> 
-        <h2>AL HAMD RICE MILL HAFIZABAD ROAD, VANIKE TARAR</h2>
+        <h1>{{ $company->value ?? 'AL HAMAD COMPUTERIZED KANTA' }}</h1> 
+        <h2>{{ $address->value ?? 'AL HAMD RICE MILL HAFIZABAD ROAD, VANIKE TARAR' }}</h2>
         <div class="data">
             <div class="fside">
                 <div class="frow frow1">
@@ -357,7 +357,7 @@
             <div class="sside">
                 <div class="srow srow1">
                     <div class="inrow1">
-                        <strong>Contact No.</strong> 03120408175
+                        <strong>Contact No.</strong> {{ $contact->value ?? '03120408175' }}
                     </div>
                     <div class="inrow2">
 
